@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+
+# Project data (copyrighted or derivative; never commit)
+data/covers/
+data/labels/
+data/fetch_report.txt
+data/labels_report.txt
+spot_check/
+
+# Training artifacts (large)
+runs/
+artifacts/
+
+# Local config
+.env
+
+# OS
+.DS_Store

@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "albumify"
+version = "0.1.0"
+description = "Tiny on-device album-cover-to-line-drawing model"
+requires-python = ">=3.11"
+dependencies = [
+    "pillow>=10",
+    "numpy>=1.26",
+    "onnxruntime>=1.17",
+]
+
+[project.optional-dependencies]
+data = [
+    "requests>=2.31",
+    "google-genai>=0.3",
+    "python-dotenv>=1.0",
+]
+train = [
+    "albumify[data]",
+    "torch>=2.3",
+    "torchvision>=0.18",
+    "onnx>=1.16",
+    "lpips>=0.1.4",
+    "scikit-image>=0.22",
+    "tensorboard>=2.16",
+]
+dev = [
+    "pytest>=8",
+    "pytest-mock>=3.12",
+]
+
+[project.scripts]
+albumify = "albumify.infer:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["albumify*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v"
