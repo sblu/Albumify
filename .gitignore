@@ -13,8 +13,13 @@ data/labels/
 data/labels_preview_*/
 data/fetch_report.txt
 data/labels_report.txt
+data/labels_retry_report.txt
+data/labels_mbdtf_report.txt
 data/labels_preview_*.txt
 data/ab_preview_grid.png
+data/review.db
+data/review.db-journal
+data/labels_history/
 spot_check/
 
 # Training artifacts (large)

@@ -18,6 +18,7 @@ data = [
     "requests>=2.31",
     "google-genai>=0.3",
     "python-dotenv>=1.0",
+    "flask>=3",
 ]
 train = [
     "albumify[data]",
