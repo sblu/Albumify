@@ -10,8 +10,11 @@ venv/
 # Project data (copyrighted or derivative; never commit)
 data/covers/
 data/labels/
+data/labels_preview_*/
 data/fetch_report.txt
 data/labels_report.txt
+data/labels_preview_*.txt
+data/ab_preview_grid.png
 spot_check/
 
 # Training artifacts (large)

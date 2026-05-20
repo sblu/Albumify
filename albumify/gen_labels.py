@@ -32,12 +32,17 @@ def _make_client(api_key: str):
 
 
 def _genai_call(client, model: str, image_bytes: bytes, mime_type: str = "image/jpeg"):
-    """Single call wrapper so tests can patch this function."""
+    """Single call wrapper so tests can patch this function.
+
+    Note: google-genai 1.47 only accepts `aspect_ratio` on ImageConfig (not
+    `image_size`). We omit ImageConfig entirely and let the model return its
+    default output size, which empirically is 1024x1024 PNG for both
+    gemini-3.1-flash-image-preview and gemini-2.5-flash-image as of 2026-05-20.
+    """
     from google.genai import types as gtypes
     image_part = gtypes.Part.from_bytes(data=image_bytes, mime_type=mime_type)
     config = gtypes.GenerateContentConfig(
         response_modalities=["IMAGE"],
-        image_config=gtypes.ImageConfig(image_size="1K"),
     )
     return client.models.generate_content(
         model=model,
