@@ -14,13 +14,6 @@
     "year": 1980
   },
   {
-    "rank": 3,
-    "slug": "the-dark-side-of-the-moon-pink-floyd",
-    "artist": "Pink Floyd",
-    "title": "The Dark Side of the Moon",
-    "year": 1973
-  },
-  {
     "rank": 4,
     "slug": "the-bodyguard-whitney-houston",
     "artist": "Whitney Houston",
@@ -203,13 +196,6 @@
     "year": 1993
   },
   {
-    "rank": 30,
-    "slug": "sgt-pepper-s-lonely-hearts-club-band-the-beatles",
-    "artist": "The Beatles",
-    "title": "Sgt. Pepper's Lonely Hearts Club Band",
-    "year": 1967
-  },
-  {
     "rank": 31,
     "slug": "grease-various-artists",
     "artist": "Various Artists",
@@ -355,13 +341,6 @@
     "artist": "Various Artists",
     "title": "Titanic: Music from the Motion Picture",
     "year": 1997
-  },
-  {
-    "rank": 52,
-    "slug": "abbey-road-the-beatles",
-    "artist": "The Beatles",
-    "title": "Abbey Road",
-    "year": 1969
   },
   {
     "rank": 53,

@@ -20,6 +20,7 @@ data/ab_preview_grid.png
 data/review.db
 data/review.db-journal
 data/labels_history/
+data/holdout/*.png
 spot_check/
 
 # Training artifacts (large)
