@@ -348,6 +348,20 @@ INDEX_HTML = r"""<!doctype html>
   td.iters .iter.prev img { width: calc(var(--prev-base) * var(--zoom)); height: calc(var(--prev-base) * var(--zoom)); opacity: 0.7; }
   td.iters .prompt { font-size: 10px; color: #555; margin-top: 3px; max-width: calc(var(--current-base) * var(--zoom)); white-space: pre-wrap; }
   td.iters .iter.prev .prompt { max-width: calc(var(--prev-base) * var(--zoom)); }
+  .mag-wrap { position: relative; display: inline-block; line-height: 0; }
+  .loupe {
+    position: absolute;
+    width: 180px;
+    height: 180px;
+    border: 2px solid #111;
+    border-radius: 50%;
+    pointer-events: none;
+    display: none;
+    background-repeat: no-repeat;
+    box-shadow: 0 0 8px rgba(0,0,0,0.55);
+    z-index: 5;
+  }
+  .loupe.active { display: block; }
   td.iters .comment-shown { font-size: 11px; color: #b00; font-style: italic; margin-top: 2px; }
   td.actions { width: 110px; }
   td.actions label { display: block; cursor: pointer; padding: 4px 0; }
@@ -391,6 +405,62 @@ INDEX_HTML = r"""<!doctype html>
 <script>
 let items = [];
 
+const LOUPE_SIZE = 180;
+const MAG = 3.5;
+
+function wrapMagnifiable(img) {
+  const wrap = document.createElement('div');
+  wrap.className = 'mag-wrap';
+  wrap.appendChild(img);
+  const loupe = document.createElement('div');
+  loupe.className = 'loupe';
+  wrap.appendChild(loupe);
+  return wrap;
+}
+
+function hideAllLoupes() {
+  document.querySelectorAll('.loupe.active').forEach(l => l.classList.remove('active'));
+}
+
+function showLoupesInRow(tr, rx, ry) {
+  // Hide loupes in any other row so we don't leak state when moving between rows.
+  document.querySelectorAll('tr').forEach(row => {
+    if (row !== tr) row.querySelectorAll('.loupe.active').forEach(l => l.classList.remove('active'));
+  });
+  tr.querySelectorAll('.mag-wrap').forEach(wrap => {
+    const img = wrap.querySelector('img');
+    const loupe = wrap.querySelector('.loupe');
+    if (!img || !loupe) return;
+    if (!img.complete || !img.naturalWidth) return;
+    const W = img.clientWidth;
+    const H = img.clientHeight;
+    if (W === 0 || H === 0) return;
+    const cx = rx * W;
+    const cy = ry * H;
+    loupe.style.left = (cx - LOUPE_SIZE / 2) + 'px';
+    loupe.style.top  = (cy - LOUPE_SIZE / 2) + 'px';
+    loupe.style.width = LOUPE_SIZE + 'px';
+    loupe.style.height = LOUPE_SIZE + 'px';
+    loupe.style.backgroundImage = "url('" + img.src + "')";
+    loupe.style.backgroundSize = (W * MAG) + 'px ' + (H * MAG) + 'px';
+    loupe.style.backgroundPosition = (LOUPE_SIZE / 2 - cx * MAG) + 'px ' + (LOUPE_SIZE / 2 - cy * MAG) + 'px';
+    loupe.classList.add('active');
+  });
+}
+
+document.addEventListener('mousemove', e => {
+  const wrap = e.target.closest ? e.target.closest('.mag-wrap') : null;
+  if (!wrap) { hideAllLoupes(); return; }
+  const img = wrap.querySelector('img');
+  if (!img) { hideAllLoupes(); return; }
+  const rect = img.getBoundingClientRect();
+  const rx = (e.clientX - rect.left) / rect.width;
+  const ry = (e.clientY - rect.top) / rect.height;
+  if (rx < 0 || rx > 1 || ry < 0 || ry > 1) { hideAllLoupes(); return; }
+  const tr = wrap.closest('tr');
+  if (tr) showLoupesInRow(tr, rx, ry);
+});
+
 function renderRow(it) {
   const tr = document.createElement('tr');
   tr.id = 'row-' + it.slug;
@@ -406,7 +476,7 @@ function renderRow(it) {
   const cimg = document.createElement('img');
   cimg.src = '/covers/' + it.slug + '.jpg';
   cimg.loading = 'lazy';
-  tdCover.appendChild(cimg);
+  tdCover.appendChild(wrapMagnifiable(cimg));
   tr.appendChild(tdCover);
 
   // Iterations: when approved, show only current. Else newest-first stack.
@@ -421,7 +491,7 @@ function renderRow(it) {
     const img = document.createElement('img');
     img.src = '/' + iter.png_path;
     img.loading = 'lazy';
-    div.appendChild(img);
+    div.appendChild(wrapMagnifiable(img));
     if (iter.comment_addressed) {
       const c = document.createElement('div');
       c.className = 'comment-shown';
