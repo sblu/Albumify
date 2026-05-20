@@ -19,9 +19,14 @@ from typing import Optional
 
 
 PROMPT = (
-    "Create a single line black-and-white line drawing of this image. "
-    "White background, black lines only, no shading or fills, "
-    "preserving the main subjects and composition of the album cover."
+    "Create a simple single line black-and-white line drawing of this image. "
+    "White background, thin black outline strokes only. "
+    "Critical constraint: every visible element must be drawn as an outline. "
+    "Do NOT fill any shape with solid black. "
+    "Render all text, letters, and logos as outline strokes only -- never as "
+    "filled-in characters. Hair, clothing, and dark objects from the source "
+    "must also be rendered as outline contours, not solid black areas. "
+    "Preserve the main subjects and composition of the album cover."
 )
 
 
