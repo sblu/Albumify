@@ -1,12 +1,3502 @@
 [
-  {"rank": 1, "slug": "thriller-michael-jackson", "artist": "Michael Jackson", "title": "Thriller", "year": 1982},
-  {"rank": 2, "slug": "back-in-black-acdc", "artist": "AC/DC", "title": "Back in Black", "year": 1980},
-  {"rank": 3, "slug": "the-dark-side-of-the-moon-pink-floyd", "artist": "Pink Floyd", "title": "The Dark Side of the Moon", "year": 1973},
-  {"rank": 4, "slug": "the-bodyguard-soundtrack-whitney-houston", "artist": "Whitney Houston", "title": "The Bodyguard", "year": 1992},
-  {"rank": 5, "slug": "their-greatest-hits-eagles", "artist": "Eagles", "title": "Their Greatest Hits (1971-1975)", "year": 1976},
-  {"rank": 6, "slug": "hotel-california-eagles", "artist": "Eagles", "title": "Hotel California", "year": 1976},
-  {"rank": 7, "slug": "come-on-over-shania-twain", "artist": "Shania Twain", "title": "Come On Over", "year": 1997},
-  {"rank": 8, "slug": "rumours-fleetwood-mac", "artist": "Fleetwood Mac", "title": "Rumours", "year": 1977},
-  {"rank": 9, "slug": "saturday-night-fever-soundtrack", "artist": "Various Artists", "title": "Saturday Night Fever", "year": 1977},
-  {"rank": 10, "slug": "led-zeppelin-iv-led-zeppelin", "artist": "Led Zeppelin", "title": "Led Zeppelin IV", "year": 1971}
+  {
+    "rank": 1,
+    "slug": "thriller-michael-jackson",
+    "artist": "Michael Jackson",
+    "title": "Thriller",
+    "year": 1982
+  },
+  {
+    "rank": 2,
+    "slug": "back-in-black-ac-dc",
+    "artist": "AC/DC",
+    "title": "Back in Black",
+    "year": 1980
+  },
+  {
+    "rank": 3,
+    "slug": "the-dark-side-of-the-moon-pink-floyd",
+    "artist": "Pink Floyd",
+    "title": "The Dark Side of the Moon",
+    "year": 1973
+  },
+  {
+    "rank": 4,
+    "slug": "the-bodyguard-whitney-houston",
+    "artist": "Whitney Houston",
+    "title": "The Bodyguard",
+    "year": 1992
+  },
+  {
+    "rank": 5,
+    "slug": "their-greatest-hits-1971-1975-eagles",
+    "artist": "Eagles",
+    "title": "Their Greatest Hits 1971-1975",
+    "year": 1976
+  },
+  {
+    "rank": 6,
+    "slug": "hotel-california-eagles",
+    "artist": "Eagles",
+    "title": "Hotel California",
+    "year": 1976
+  },
+  {
+    "rank": 7,
+    "slug": "come-on-over-shania-twain",
+    "artist": "Shania Twain",
+    "title": "Come On Over",
+    "year": 1997
+  },
+  {
+    "rank": 8,
+    "slug": "rumours-fleetwood-mac",
+    "artist": "Fleetwood Mac",
+    "title": "Rumours",
+    "year": 1977
+  },
+  {
+    "rank": 9,
+    "slug": "saturday-night-fever-various-artists",
+    "artist": "Various Artists",
+    "title": "Saturday Night Fever",
+    "year": 1977
+  },
+  {
+    "rank": 10,
+    "slug": "led-zeppelin-iv-led-zeppelin",
+    "artist": "Led Zeppelin",
+    "title": "Led Zeppelin IV",
+    "year": 1971
+  },
+  {
+    "rank": 11,
+    "slug": "bee-gees-greatest-bee-gees",
+    "artist": "Bee Gees",
+    "title": "Bee Gees Greatest",
+    "year": 1979
+  },
+  {
+    "rank": 12,
+    "slug": "bad-michael-jackson",
+    "artist": "Michael Jackson",
+    "title": "Bad",
+    "year": 1987
+  },
+  {
+    "rank": 13,
+    "slug": "born-in-the-u-s-a-bruce-springsteen",
+    "artist": "Bruce Springsteen",
+    "title": "Born in the U.S.A.",
+    "year": 1984
+  },
+  {
+    "rank": 14,
+    "slug": "brothers-in-arms-dire-straits",
+    "artist": "Dire Straits",
+    "title": "Brothers in Arms",
+    "year": 1985
+  },
+  {
+    "rank": 15,
+    "slug": "dirty-dancing-various-artists",
+    "artist": "Various Artists",
+    "title": "Dirty Dancing",
+    "year": 1987
+  },
+  {
+    "rank": 16,
+    "slug": "greatest-hits-queen",
+    "artist": "Queen",
+    "title": "Greatest Hits",
+    "year": 1981
+  },
+  {
+    "rank": 17,
+    "slug": "bat-out-of-hell-meat-loaf",
+    "artist": "Meat Loaf",
+    "title": "Bat Out of Hell",
+    "year": 1977
+  },
+  {
+    "rank": 18,
+    "slug": "falling-into-you-celine-dion",
+    "artist": "Celine Dion",
+    "title": "Falling into You",
+    "year": 1996
+  },
+  {
+    "rank": 19,
+    "slug": "jagged-little-pill-alanis-morissette",
+    "artist": "Alanis Morissette",
+    "title": "Jagged Little Pill",
+    "year": 1995
+  },
+  {
+    "rank": 20,
+    "slug": "appetite-for-destruction-guns-n-roses",
+    "artist": "Guns N' Roses",
+    "title": "Appetite for Destruction",
+    "year": 1987
+  },
+  {
+    "rank": 21,
+    "slug": "21-adele",
+    "artist": "Adele",
+    "title": "21",
+    "year": 2011
+  },
+  {
+    "rank": 22,
+    "slug": "dangerous-michael-jackson",
+    "artist": "Michael Jackson",
+    "title": "Dangerous",
+    "year": 1991
+  },
+  {
+    "rank": 23,
+    "slug": "whitney-houston-whitney-houston",
+    "artist": "Whitney Houston",
+    "title": "Whitney Houston",
+    "year": 1985
+  },
+  {
+    "rank": 24,
+    "slug": "slippery-when-wet-bon-jovi",
+    "artist": "Bon Jovi",
+    "title": "Slippery When Wet",
+    "year": 1986
+  },
+  {
+    "rank": 25,
+    "slug": "the-wall-pink-floyd",
+    "artist": "Pink Floyd",
+    "title": "The Wall",
+    "year": 1979
+  },
+  {
+    "rank": 26,
+    "slug": "cracked-rear-view-hootie-and-the-blowfish",
+    "artist": "Hootie & the Blowfish",
+    "title": "Cracked Rear View",
+    "year": 1994
+  },
+  {
+    "rank": 27,
+    "slug": "tapestry-carole-king",
+    "artist": "Carole King",
+    "title": "Tapestry",
+    "year": 1971
+  },
+  {
+    "rank": 28,
+    "slug": "boston-boston",
+    "artist": "Boston",
+    "title": "Boston",
+    "year": 1976
+  },
+  {
+    "rank": 29,
+    "slug": "music-box-mariah-carey",
+    "artist": "Mariah Carey",
+    "title": "Music Box",
+    "year": 1993
+  },
+  {
+    "rank": 30,
+    "slug": "sgt-pepper-s-lonely-hearts-club-band-the-beatles",
+    "artist": "The Beatles",
+    "title": "Sgt. Pepper's Lonely Hearts Club Band",
+    "year": 1967
+  },
+  {
+    "rank": 31,
+    "slug": "grease-various-artists",
+    "artist": "Various Artists",
+    "title": "Grease",
+    "year": 1978
+  },
+  {
+    "rank": 32,
+    "slug": "synchronicity-the-police",
+    "artist": "The Police",
+    "title": "Synchronicity",
+    "year": 1983
+  },
+  {
+    "rank": 33,
+    "slug": "born-to-run-bruce-springsteen",
+    "artist": "Bruce Springsteen",
+    "title": "Born to Run",
+    "year": 1975
+  },
+  {
+    "rank": 34,
+    "slug": "the-immaculate-collection-madonna",
+    "artist": "Madonna",
+    "title": "The Immaculate Collection",
+    "year": 1990
+  },
+  {
+    "rank": 35,
+    "slug": "millennium-backstreet-boys",
+    "artist": "Backstreet Boys",
+    "title": "Millennium",
+    "year": 1999
+  },
+  {
+    "rank": 36,
+    "slug": "double-live-garth-brooks",
+    "artist": "Garth Brooks",
+    "title": "Double Live",
+    "year": 1998
+  },
+  {
+    "rank": 37,
+    "slug": "no-fences-garth-brooks",
+    "artist": "Garth Brooks",
+    "title": "No Fences",
+    "year": 1990
+  },
+  {
+    "rank": 38,
+    "slug": "ropin-the-wind-garth-brooks",
+    "artist": "Garth Brooks",
+    "title": "Ropin' the Wind",
+    "year": 1991
+  },
+  {
+    "rank": 39,
+    "slug": "baby-one-more-time-britney-spears",
+    "artist": "Britney Spears",
+    "title": "...Baby One More Time",
+    "year": 1999
+  },
+  {
+    "rank": 40,
+    "slug": "let-s-talk-about-love-celine-dion",
+    "artist": "Celine Dion",
+    "title": "Let's Talk About Love",
+    "year": 1997
+  },
+  {
+    "rank": 41,
+    "slug": "1-the-beatles",
+    "artist": "The Beatles",
+    "title": "1",
+    "year": 2000
+  },
+  {
+    "rank": 42,
+    "slug": "hybrid-theory-linkin-park",
+    "artist": "Linkin Park",
+    "title": "Hybrid Theory",
+    "year": 2000
+  },
+  {
+    "rank": 43,
+    "slug": "come-away-with-me-norah-jones",
+    "artist": "Norah Jones",
+    "title": "Come Away with Me",
+    "year": 2002
+  },
+  {
+    "rank": 44,
+    "slug": "the-marshall-mathers-lp-eminem",
+    "artist": "Eminem",
+    "title": "The Marshall Mathers LP",
+    "year": 2000
+  },
+  {
+    "rank": 45,
+    "slug": "the-eminem-show-eminem",
+    "artist": "Eminem",
+    "title": "The Eminem Show",
+    "year": 2002
+  },
+  {
+    "rank": 46,
+    "slug": "confessions-usher",
+    "artist": "Usher",
+    "title": "Confessions",
+    "year": 2004
+  },
+  {
+    "rank": 47,
+    "slug": "a-rush-of-blood-to-the-head-coldplay",
+    "artist": "Coldplay",
+    "title": "A Rush of Blood to the Head",
+    "year": 2002
+  },
+  {
+    "rank": 48,
+    "slug": "parachutes-coldplay",
+    "artist": "Coldplay",
+    "title": "Parachutes",
+    "year": 2000
+  },
+  {
+    "rank": 49,
+    "slug": "25-adele",
+    "artist": "Adele",
+    "title": "25",
+    "year": 2015
+  },
+  {
+    "rank": 50,
+    "slug": "wish-you-were-here-pink-floyd",
+    "artist": "Pink Floyd",
+    "title": "Wish You Were Here",
+    "year": 1975
+  },
+  {
+    "rank": 51,
+    "slug": "titanic-music-from-the-motion-picture-various-artists",
+    "artist": "Various Artists",
+    "title": "Titanic: Music from the Motion Picture",
+    "year": 1997
+  },
+  {
+    "rank": 52,
+    "slug": "abbey-road-the-beatles",
+    "artist": "The Beatles",
+    "title": "Abbey Road",
+    "year": 1969
+  },
+  {
+    "rank": 53,
+    "slug": "nevermind-nirvana",
+    "artist": "Nirvana",
+    "title": "Nevermind",
+    "year": 1991
+  },
+  {
+    "rank": 54,
+    "slug": "the-joshua-tree-u2",
+    "artist": "U2",
+    "title": "The Joshua Tree",
+    "year": 1987
+  },
+  {
+    "rank": 55,
+    "slug": "purple-rain-prince",
+    "artist": "Prince",
+    "title": "Purple Rain",
+    "year": 1984
+  },
+  {
+    "rank": 56,
+    "slug": "like-a-virgin-madonna",
+    "artist": "Madonna",
+    "title": "Like a Virgin",
+    "year": 1984
+  },
+  {
+    "rank": 57,
+    "slug": "true-blue-madonna",
+    "artist": "Madonna",
+    "title": "True Blue",
+    "year": 1986
+  },
+  {
+    "rank": 58,
+    "slug": "like-a-prayer-madonna",
+    "artist": "Madonna",
+    "title": "Like a Prayer",
+    "year": 1989
+  },
+  {
+    "rank": 59,
+    "slug": "greatest-hits-bruce-springsteen",
+    "artist": "Bruce Springsteen",
+    "title": "Greatest Hits",
+    "year": 1995
+  },
+  {
+    "rank": 60,
+    "slug": "greatest-hits-volume-i-and-volume-ii-billy-joel",
+    "artist": "Billy Joel",
+    "title": "Greatest Hits Volume I & Volume II",
+    "year": 1985
+  },
+  {
+    "rank": 61,
+    "slug": "greatest-hits-elton-john",
+    "artist": "Elton John",
+    "title": "Greatest Hits",
+    "year": 1974
+  },
+  {
+    "rank": 62,
+    "slug": "hell-freezes-over-the-eagles",
+    "artist": "The Eagles",
+    "title": "Hell Freezes Over",
+    "year": 1994
+  },
+  {
+    "rank": 63,
+    "slug": "greatest-hits-fleetwood-mac",
+    "artist": "Fleetwood Mac",
+    "title": "Greatest Hits",
+    "year": 1988
+  },
+  {
+    "rank": 64,
+    "slug": "greatest-hits-aerosmith",
+    "artist": "Aerosmith",
+    "title": "Greatest Hits",
+    "year": 1980
+  },
+  {
+    "rank": 65,
+    "slug": "pump-aerosmith",
+    "artist": "Aerosmith",
+    "title": "Pump",
+    "year": 1989
+  },
+  {
+    "rank": 66,
+    "slug": "get-a-grip-aerosmith",
+    "artist": "Aerosmith",
+    "title": "Get a Grip",
+    "year": 1993
+  },
+  {
+    "rank": 67,
+    "slug": "hysteria-def-leppard",
+    "artist": "Def Leppard",
+    "title": "Hysteria",
+    "year": 1987
+  },
+  {
+    "rank": 68,
+    "slug": "pyromania-def-leppard",
+    "artist": "Def Leppard",
+    "title": "Pyromania",
+    "year": 1983
+  },
+  {
+    "rank": 69,
+    "slug": "greatest-hits-journey",
+    "artist": "Journey",
+    "title": "Greatest Hits",
+    "year": 1988
+  },
+  {
+    "rank": 70,
+    "slug": "escape-journey",
+    "artist": "Journey",
+    "title": "Escape",
+    "year": 1981
+  },
+  {
+    "rank": 71,
+    "slug": "greatest-hits-1974-78-steve-miller-band",
+    "artist": "Steve Miller Band",
+    "title": "Greatest Hits 1974-78",
+    "year": 1978
+  },
+  {
+    "rank": 72,
+    "slug": "legend-bob-marley-and-the-wailers",
+    "artist": "Bob Marley & The Wailers",
+    "title": "Legend",
+    "year": 1984
+  },
+  {
+    "rank": 73,
+    "slug": "ii-boyz-ii-men",
+    "artist": "Boyz II Men",
+    "title": "II",
+    "year": 1994
+  },
+  {
+    "rank": 74,
+    "slug": "crazysexycool-tlc",
+    "artist": "TLC",
+    "title": "CrazySexyCool",
+    "year": 1994
+  },
+  {
+    "rank": 75,
+    "slug": "tracy-chapman-tracy-chapman",
+    "artist": "Tracy Chapman",
+    "title": "Tracy Chapman",
+    "year": 1988
+  },
+  {
+    "rank": 76,
+    "slug": "no-jacket-required-phil-collins",
+    "artist": "Phil Collins",
+    "title": "No Jacket Required",
+    "year": 1985
+  },
+  {
+    "rank": 77,
+    "slug": "but-seriously-phil-collins",
+    "artist": "Phil Collins",
+    "title": "...But Seriously",
+    "year": 1989
+  },
+  {
+    "rank": 78,
+    "slug": "invisible-touch-genesis",
+    "artist": "Genesis",
+    "title": "Invisible Touch",
+    "year": 1986
+  },
+  {
+    "rank": 79,
+    "slug": "we-can-t-dance-genesis",
+    "artist": "Genesis",
+    "title": "We Can't Dance",
+    "year": 1991
+  },
+  {
+    "rank": 80,
+    "slug": "can-t-slow-down-lionel-richie",
+    "artist": "Lionel Richie",
+    "title": "Can't Slow Down",
+    "year": 1983
+  },
+  {
+    "rank": 81,
+    "slug": "private-dancer-tina-turner",
+    "artist": "Tina Turner",
+    "title": "Private Dancer",
+    "year": 1984
+  },
+  {
+    "rank": 82,
+    "slug": "she-s-so-unusual-cyndi-lauper",
+    "artist": "Cyndi Lauper",
+    "title": "She's So Unusual",
+    "year": 1983
+  },
+  {
+    "rank": 83,
+    "slug": "reckless-bryan-adams",
+    "artist": "Bryan Adams",
+    "title": "Reckless",
+    "year": 1984
+  },
+  {
+    "rank": 84,
+    "slug": "sports-huey-lewis-and-the-news",
+    "artist": "Huey Lewis & The News",
+    "title": "Sports",
+    "year": 1983
+  },
+  {
+    "rank": 85,
+    "slug": "eliminator-zz-top",
+    "artist": "ZZ Top",
+    "title": "Eliminator",
+    "year": 1983
+  },
+  {
+    "rank": 86,
+    "slug": "1984-van-halen",
+    "artist": "Van Halen",
+    "title": "1984",
+    "year": 1984
+  },
+  {
+    "rank": 87,
+    "slug": "van-halen-van-halen",
+    "artist": "Van Halen",
+    "title": "Van Halen",
+    "year": 1978
+  },
+  {
+    "rank": 88,
+    "slug": "new-jersey-bon-jovi",
+    "artist": "Bon Jovi",
+    "title": "New Jersey",
+    "year": 1988
+  },
+  {
+    "rank": 89,
+    "slug": "cross-road-bon-jovi",
+    "artist": "Bon Jovi",
+    "title": "Cross Road",
+    "year": 1994
+  },
+  {
+    "rank": 90,
+    "slug": "use-your-illusion-i-guns-n-roses",
+    "artist": "Guns N' Roses",
+    "title": "Use Your Illusion I",
+    "year": 1991
+  },
+  {
+    "rank": 91,
+    "slug": "use-your-illusion-ii-guns-n-roses",
+    "artist": "Guns N' Roses",
+    "title": "Use Your Illusion II",
+    "year": 1991
+  },
+  {
+    "rank": 92,
+    "slug": "metallica-metallica",
+    "artist": "Metallica",
+    "title": "Metallica",
+    "year": 1991
+  },
+  {
+    "rank": 93,
+    "slug": "and-justice-for-all-metallica",
+    "artist": "Metallica",
+    "title": "...And Justice for All",
+    "year": 1988
+  },
+  {
+    "rank": 94,
+    "slug": "master-of-puppets-metallica",
+    "artist": "Metallica",
+    "title": "Master of Puppets",
+    "year": 1986
+  },
+  {
+    "rank": 95,
+    "slug": "ten-pearl-jam",
+    "artist": "Pearl Jam",
+    "title": "Ten",
+    "year": 1991
+  },
+  {
+    "rank": 96,
+    "slug": "vs-pearl-jam",
+    "artist": "Pearl Jam",
+    "title": "Vs.",
+    "year": 1993
+  },
+  {
+    "rank": 97,
+    "slug": "superunknown-soundgarden",
+    "artist": "Soundgarden",
+    "title": "Superunknown",
+    "year": 1994
+  },
+  {
+    "rank": 98,
+    "slug": "core-stone-temple-pilots",
+    "artist": "Stone Temple Pilots",
+    "title": "Core",
+    "year": 1992
+  },
+  {
+    "rank": 99,
+    "slug": "mellon-collie-and-the-infinite-sadness-smashing-pumpkins",
+    "artist": "Smashing Pumpkins",
+    "title": "Mellon Collie and the Infinite Sadness",
+    "year": 1995
+  },
+  {
+    "rank": 100,
+    "slug": "blood-sugar-sex-magik-red-hot-chili-peppers",
+    "artist": "Red Hot Chili Peppers",
+    "title": "Blood Sugar Sex Magik",
+    "year": 1991
+  },
+  {
+    "rank": 101,
+    "slug": "californication-red-hot-chili-peppers",
+    "artist": "Red Hot Chili Peppers",
+    "title": "Californication",
+    "year": 1999
+  },
+  {
+    "rank": 102,
+    "slug": "by-the-way-red-hot-chili-peppers",
+    "artist": "Red Hot Chili Peppers",
+    "title": "By the Way",
+    "year": 2002
+  },
+  {
+    "rank": 103,
+    "slug": "rubber-soul-the-beatles",
+    "artist": "The Beatles",
+    "title": "Rubber Soul",
+    "year": 1965
+  },
+  {
+    "rank": 104,
+    "slug": "revolver-the-beatles",
+    "artist": "The Beatles",
+    "title": "Revolver",
+    "year": 1966
+  },
+  {
+    "rank": 105,
+    "slug": "the-beatles-the-beatles",
+    "artist": "The Beatles",
+    "title": "The Beatles",
+    "year": 1968
+  },
+  {
+    "rank": 106,
+    "slug": "let-it-be-the-beatles",
+    "artist": "The Beatles",
+    "title": "Let It Be",
+    "year": 1970
+  },
+  {
+    "rank": 107,
+    "slug": "help-the-beatles",
+    "artist": "The Beatles",
+    "title": "Help!",
+    "year": 1965
+  },
+  {
+    "rank": 108,
+    "slug": "a-hard-day-s-night-the-beatles",
+    "artist": "The Beatles",
+    "title": "A Hard Day's Night",
+    "year": 1964
+  },
+  {
+    "rank": 109,
+    "slug": "1962-1966-the-beatles",
+    "artist": "The Beatles",
+    "title": "1962-1966",
+    "year": 1973
+  },
+  {
+    "rank": 110,
+    "slug": "1967-1970-the-beatles",
+    "artist": "The Beatles",
+    "title": "1967-1970",
+    "year": 1973
+  },
+  {
+    "rank": 111,
+    "slug": "sticky-fingers-the-rolling-stones",
+    "artist": "The Rolling Stones",
+    "title": "Sticky Fingers",
+    "year": 1971
+  },
+  {
+    "rank": 112,
+    "slug": "exile-on-main-st-the-rolling-stones",
+    "artist": "The Rolling Stones",
+    "title": "Exile on Main St.",
+    "year": 1972
+  },
+  {
+    "rank": 113,
+    "slug": "let-it-bleed-the-rolling-stones",
+    "artist": "The Rolling Stones",
+    "title": "Let It Bleed",
+    "year": 1969
+  },
+  {
+    "rank": 114,
+    "slug": "some-girls-the-rolling-stones",
+    "artist": "The Rolling Stones",
+    "title": "Some Girls",
+    "year": 1978
+  },
+  {
+    "rank": 115,
+    "slug": "tattoo-you-the-rolling-stones",
+    "artist": "The Rolling Stones",
+    "title": "Tattoo You",
+    "year": 1981
+  },
+  {
+    "rank": 116,
+    "slug": "led-zeppelin-ii-led-zeppelin",
+    "artist": "Led Zeppelin",
+    "title": "Led Zeppelin II",
+    "year": 1969
+  },
+  {
+    "rank": 117,
+    "slug": "physical-graffiti-led-zeppelin",
+    "artist": "Led Zeppelin",
+    "title": "Physical Graffiti",
+    "year": 1975
+  },
+  {
+    "rank": 118,
+    "slug": "houses-of-the-holy-led-zeppelin",
+    "artist": "Led Zeppelin",
+    "title": "Houses of the Holy",
+    "year": 1973
+  },
+  {
+    "rank": 119,
+    "slug": "who-s-next-the-who",
+    "artist": "The Who",
+    "title": "Who's Next",
+    "year": 1971
+  },
+  {
+    "rank": 120,
+    "slug": "tommy-the-who",
+    "artist": "The Who",
+    "title": "Tommy",
+    "year": 1969
+  },
+  {
+    "rank": 121,
+    "slug": "the-doors-the-doors",
+    "artist": "The Doors",
+    "title": "The Doors",
+    "year": 1967
+  },
+  {
+    "rank": 122,
+    "slug": "are-you-experienced-jimi-hendrix-experience",
+    "artist": "Jimi Hendrix Experience",
+    "title": "Are You Experienced",
+    "year": 1967
+  },
+  {
+    "rank": 123,
+    "slug": "electric-ladyland-jimi-hendrix-experience",
+    "artist": "Jimi Hendrix Experience",
+    "title": "Electric Ladyland",
+    "year": 1968
+  },
+  {
+    "rank": 124,
+    "slug": "animals-pink-floyd",
+    "artist": "Pink Floyd",
+    "title": "Animals",
+    "year": 1977
+  },
+  {
+    "rank": 125,
+    "slug": "the-division-bell-pink-floyd",
+    "artist": "Pink Floyd",
+    "title": "The Division Bell",
+    "year": 1994
+  },
+  {
+    "rank": 126,
+    "slug": "the-rise-and-fall-of-ziggy-stardust-and-the-spiders-from-mars-david-bowie",
+    "artist": "David Bowie",
+    "title": "The Rise and Fall of Ziggy Stardust and the Spiders from Mars",
+    "year": 1972
+  },
+  {
+    "rank": 127,
+    "slug": "heroes-david-bowie",
+    "artist": "David Bowie",
+    "title": "Heroes",
+    "year": 1977
+  },
+  {
+    "rank": 128,
+    "slug": "let-s-dance-david-bowie",
+    "artist": "David Bowie",
+    "title": "Let's Dance",
+    "year": 1983
+  },
+  {
+    "rank": 129,
+    "slug": "songs-in-the-key-of-life-stevie-wonder",
+    "artist": "Stevie Wonder",
+    "title": "Songs in the Key of Life",
+    "year": 1976
+  },
+  {
+    "rank": 130,
+    "slug": "innervisions-stevie-wonder",
+    "artist": "Stevie Wonder",
+    "title": "Innervisions",
+    "year": 1973
+  },
+  {
+    "rank": 131,
+    "slug": "talking-book-stevie-wonder",
+    "artist": "Stevie Wonder",
+    "title": "Talking Book",
+    "year": 1972
+  },
+  {
+    "rank": 132,
+    "slug": "what-s-going-on-marvin-gaye",
+    "artist": "Marvin Gaye",
+    "title": "What's Going On",
+    "year": 1971
+  },
+  {
+    "rank": 133,
+    "slug": "i-never-loved-a-man-the-way-i-love-you-aretha-franklin",
+    "artist": "Aretha Franklin",
+    "title": "I Never Loved a Man the Way I Love You",
+    "year": 1967
+  },
+  {
+    "rank": 134,
+    "slug": "bridge-over-troubled-water-simon-and-garfunkel",
+    "artist": "Simon & Garfunkel",
+    "title": "Bridge over Troubled Water",
+    "year": 1970
+  },
+  {
+    "rank": 135,
+    "slug": "greatest-hits-simon-and-garfunkel",
+    "artist": "Simon & Garfunkel",
+    "title": "Greatest Hits",
+    "year": 1972
+  },
+  {
+    "rank": 136,
+    "slug": "blue-joni-mitchell",
+    "artist": "Joni Mitchell",
+    "title": "Blue",
+    "year": 1971
+  },
+  {
+    "rank": 137,
+    "slug": "sweet-baby-james-james-taylor",
+    "artist": "James Taylor",
+    "title": "Sweet Baby James",
+    "year": 1970
+  },
+  {
+    "rank": 138,
+    "slug": "goodbye-yellow-brick-road-elton-john",
+    "artist": "Elton John",
+    "title": "Goodbye Yellow Brick Road",
+    "year": 1973
+  },
+  {
+    "rank": 139,
+    "slug": "captain-fantastic-and-the-brown-dirt-cowboy-elton-john",
+    "artist": "Elton John",
+    "title": "Captain Fantastic and the Brown Dirt Cowboy",
+    "year": 1975
+  },
+  {
+    "rank": 140,
+    "slug": "tea-for-the-tillerman-cat-stevens",
+    "artist": "Cat Stevens",
+    "title": "Tea for the Tillerman",
+    "year": 1970
+  },
+  {
+    "rank": 141,
+    "slug": "harvest-neil-young",
+    "artist": "Neil Young",
+    "title": "Harvest",
+    "year": 1972
+  },
+  {
+    "rank": 142,
+    "slug": "after-the-gold-rush-neil-young",
+    "artist": "Neil Young",
+    "title": "After the Gold Rush",
+    "year": 1970
+  },
+  {
+    "rank": 143,
+    "slug": "deja-vu-crosby-stills-nash-and-young",
+    "artist": "Crosby, Stills, Nash & Young",
+    "title": "Deja Vu",
+    "year": 1970
+  },
+  {
+    "rank": 144,
+    "slug": "america-america",
+    "artist": "America",
+    "title": "America",
+    "year": 1971
+  },
+  {
+    "rank": 145,
+    "slug": "aja-steely-dan",
+    "artist": "Steely Dan",
+    "title": "Aja",
+    "year": 1977
+  },
+  {
+    "rank": 146,
+    "slug": "rumours-steely-dan",
+    "artist": "Steely Dan",
+    "title": "Rumours",
+    "year": 1972
+  },
+  {
+    "rank": 147,
+    "slug": "abba-gold-greatest-hits-abba",
+    "artist": "ABBA",
+    "title": "ABBA Gold: Greatest Hits",
+    "year": 1992
+  },
+  {
+    "rank": 148,
+    "slug": "arrival-abba",
+    "artist": "ABBA",
+    "title": "Arrival",
+    "year": 1976
+  },
+  {
+    "rank": 149,
+    "slug": "greatest-hits-olivia-newton-john",
+    "artist": "Olivia Newton-John",
+    "title": "Greatest Hits",
+    "year": 1977
+  },
+  {
+    "rank": 150,
+    "slug": "spirits-having-flown-bee-gees",
+    "artist": "Bee Gees",
+    "title": "Spirits Having Flown",
+    "year": 1979
+  },
+  {
+    "rank": 151,
+    "slug": "the-singles-1969-1973-carpenters",
+    "artist": "Carpenters",
+    "title": "The Singles: 1969-1973",
+    "year": 1973
+  },
+  {
+    "rank": 152,
+    "slug": "greatest-hits-linda-ronstadt",
+    "artist": "Linda Ronstadt",
+    "title": "Greatest Hits",
+    "year": 1976
+  },
+  {
+    "rank": 153,
+    "slug": "off-the-wall-michael-jackson",
+    "artist": "Michael Jackson",
+    "title": "Off the Wall",
+    "year": 1979
+  },
+  {
+    "rank": 154,
+    "slug": "history-past-present-and-future-book-i-michael-jackson",
+    "artist": "Michael Jackson",
+    "title": "HIStory: Past, Present and Future, Book I",
+    "year": 1995
+  },
+  {
+    "rank": 155,
+    "slug": "music-madonna",
+    "artist": "Madonna",
+    "title": "Music",
+    "year": 2000
+  },
+  {
+    "rank": 156,
+    "slug": "ray-of-light-madonna",
+    "artist": "Madonna",
+    "title": "Ray of Light",
+    "year": 1998
+  },
+  {
+    "rank": 157,
+    "slug": "confessions-on-a-dance-floor-madonna",
+    "artist": "Madonna",
+    "title": "Confessions on a Dance Floor",
+    "year": 2005
+  },
+  {
+    "rank": 158,
+    "slug": "1999-prince",
+    "artist": "Prince",
+    "title": "1999",
+    "year": 1982
+  },
+  {
+    "rank": 159,
+    "slug": "sign-o-the-times-prince",
+    "artist": "Prince",
+    "title": "Sign o' the Times",
+    "year": 1987
+  },
+  {
+    "rank": 160,
+    "slug": "songs-from-the-big-chair-tears-for-fears",
+    "artist": "Tears for Fears",
+    "title": "Songs from the Big Chair",
+    "year": 1985
+  },
+  {
+    "rank": 161,
+    "slug": "rio-duran-duran",
+    "artist": "Duran Duran",
+    "title": "Rio",
+    "year": 1982
+  },
+  {
+    "rank": 162,
+    "slug": "kick-inxs",
+    "artist": "INXS",
+    "title": "Kick",
+    "year": 1987
+  },
+  {
+    "rank": 163,
+    "slug": "4-foreigner",
+    "artist": "Foreigner",
+    "title": "4",
+    "year": 1981
+  },
+  {
+    "rank": 164,
+    "slug": "records-foreigner",
+    "artist": "Foreigner",
+    "title": "Records",
+    "year": 1982
+  },
+  {
+    "rank": 165,
+    "slug": "hi-infidelity-reo-speedwagon",
+    "artist": "REO Speedwagon",
+    "title": "Hi Infidelity",
+    "year": 1980
+  },
+  {
+    "rank": 166,
+    "slug": "paradise-theatre-styx",
+    "artist": "Styx",
+    "title": "Paradise Theatre",
+    "year": 1981
+  },
+  {
+    "rank": 167,
+    "slug": "crimes-of-passion-pat-benatar",
+    "artist": "Pat Benatar",
+    "title": "Crimes of Passion",
+    "year": 1980
+  },
+  {
+    "rank": 168,
+    "slug": "heart-heart",
+    "artist": "Heart",
+    "title": "Heart",
+    "year": 1985
+  },
+  {
+    "rank": 169,
+    "slug": "whitesnake-whitesnake",
+    "artist": "Whitesnake",
+    "title": "Whitesnake",
+    "year": 1987
+  },
+  {
+    "rank": 170,
+    "slug": "look-what-the-cat-dragged-in-poison",
+    "artist": "Poison",
+    "title": "Look What the Cat Dragged In",
+    "year": 1986
+  },
+  {
+    "rank": 171,
+    "slug": "night-songs-cinderella",
+    "artist": "Cinderella",
+    "title": "Night Songs",
+    "year": 1986
+  },
+  {
+    "rank": 172,
+    "slug": "dr-feelgood-motley-crue",
+    "artist": "Motley Crue",
+    "title": "Dr. Feelgood",
+    "year": 1989
+  },
+  {
+    "rank": 173,
+    "slug": "girls-girls-girls-motley-crue",
+    "artist": "Motley Crue",
+    "title": "Girls, Girls, Girls",
+    "year": 1987
+  },
+  {
+    "rank": 174,
+    "slug": "out-of-the-cellar-ratt",
+    "artist": "Ratt",
+    "title": "Out of the Cellar",
+    "year": 1984
+  },
+  {
+    "rank": 175,
+    "slug": "stay-hungry-twisted-sister",
+    "artist": "Twisted Sister",
+    "title": "Stay Hungry",
+    "year": 1984
+  },
+  {
+    "rank": 176,
+    "slug": "metal-health-quiet-riot",
+    "artist": "Quiet Riot",
+    "title": "Metal Health",
+    "year": 1983
+  },
+  {
+    "rank": 177,
+    "slug": "the-number-of-the-beast-iron-maiden",
+    "artist": "Iron Maiden",
+    "title": "The Number of the Beast",
+    "year": 1982
+  },
+  {
+    "rank": 178,
+    "slug": "screaming-for-vengeance-judas-priest",
+    "artist": "Judas Priest",
+    "title": "Screaming for Vengeance",
+    "year": 1982
+  },
+  {
+    "rank": 179,
+    "slug": "paranoid-black-sabbath",
+    "artist": "Black Sabbath",
+    "title": "Paranoid",
+    "year": 1970
+  },
+  {
+    "rank": 180,
+    "slug": "blizzard-of-ozz-ozzy-osbourne",
+    "artist": "Ozzy Osbourne",
+    "title": "Blizzard of Ozz",
+    "year": 1980
+  },
+  {
+    "rank": 181,
+    "slug": "love-at-first-sting-scorpions",
+    "artist": "Scorpions",
+    "title": "Love at First Sting",
+    "year": 1984
+  },
+  {
+    "rank": 182,
+    "slug": "the-final-countdown-europe",
+    "artist": "Europe",
+    "title": "The Final Countdown",
+    "year": 1986
+  },
+  {
+    "rank": 183,
+    "slug": "eye-of-the-tiger-survivor",
+    "artist": "Survivor",
+    "title": "Eye of the Tiger",
+    "year": 1982
+  },
+  {
+    "rank": 184,
+    "slug": "toto-iv-toto",
+    "artist": "Toto",
+    "title": "Toto IV",
+    "year": 1982
+  },
+  {
+    "rank": 185,
+    "slug": "chicago-17-chicago",
+    "artist": "Chicago",
+    "title": "Chicago 17",
+    "year": 1984
+  },
+  {
+    "rank": 186,
+    "slug": "back-in-the-high-life-steve-winwood",
+    "artist": "Steve Winwood",
+    "title": "Back in the High Life",
+    "year": 1986
+  },
+  {
+    "rank": 187,
+    "slug": "so-peter-gabriel",
+    "artist": "Peter Gabriel",
+    "title": "So",
+    "year": 1986
+  },
+  {
+    "rank": 188,
+    "slug": "diamond-life-sade",
+    "artist": "Sade",
+    "title": "Diamond Life",
+    "year": 1984
+  },
+  {
+    "rank": 189,
+    "slug": "promise-sade",
+    "artist": "Sade",
+    "title": "Promise",
+    "year": 1985
+  },
+  {
+    "rank": 190,
+    "slug": "faith-george-michael",
+    "artist": "George Michael",
+    "title": "Faith",
+    "year": 1987
+  },
+  {
+    "rank": 191,
+    "slug": "make-it-big-wham",
+    "artist": "Wham!",
+    "title": "Make It Big",
+    "year": 1984
+  },
+  {
+    "rank": 192,
+    "slug": "colour-by-numbers-culture-club",
+    "artist": "Culture Club",
+    "title": "Colour by Numbers",
+    "year": 1983
+  },
+  {
+    "rank": 193,
+    "slug": "sweet-dreams-are-made-of-this-eurythmics",
+    "artist": "Eurythmics",
+    "title": "Sweet Dreams (Are Made of This)",
+    "year": 1983
+  },
+  {
+    "rank": 194,
+    "slug": "rock-n-soul-part-1-hall-and-oates",
+    "artist": "Hall & Oates",
+    "title": "Rock 'n Soul Part 1",
+    "year": 1983
+  },
+  {
+    "rank": 195,
+    "slug": "private-eyes-hall-and-oates",
+    "artist": "Hall & Oates",
+    "title": "Private Eyes",
+    "year": 1981
+  },
+  {
+    "rank": 196,
+    "slug": "mariah-carey-mariah-carey",
+    "artist": "Mariah Carey",
+    "title": "Mariah Carey",
+    "year": 1990
+  },
+  {
+    "rank": 197,
+    "slug": "daydream-mariah-carey",
+    "artist": "Mariah Carey",
+    "title": "Daydream",
+    "year": 1995
+  },
+  {
+    "rank": 198,
+    "slug": "butterfly-mariah-carey",
+    "artist": "Mariah Carey",
+    "title": "Butterfly",
+    "year": 1997
+  },
+  {
+    "rank": 199,
+    "slug": "emotions-mariah-carey",
+    "artist": "Mariah Carey",
+    "title": "Emotions",
+    "year": 1991
+  },
+  {
+    "rank": 200,
+    "slug": "whitney-whitney-houston",
+    "artist": "Whitney Houston",
+    "title": "Whitney",
+    "year": 1987
+  },
+  {
+    "rank": 201,
+    "slug": "my-love-is-your-love-whitney-houston",
+    "artist": "Whitney Houston",
+    "title": "My Love Is Your Love",
+    "year": 1998
+  },
+  {
+    "rank": 202,
+    "slug": "cooleyhighharmony-boyz-ii-men",
+    "artist": "Boyz II Men",
+    "title": "Cooleyhighharmony",
+    "year": 1991
+  },
+  {
+    "rank": 203,
+    "slug": "rhythm-nation-1814-janet-jackson",
+    "artist": "Janet Jackson",
+    "title": "Rhythm Nation 1814",
+    "year": 1989
+  },
+  {
+    "rank": 204,
+    "slug": "janet-janet-jackson",
+    "artist": "Janet Jackson",
+    "title": "janet.",
+    "year": 1993
+  },
+  {
+    "rank": 205,
+    "slug": "the-velvet-rope-janet-jackson",
+    "artist": "Janet Jackson",
+    "title": "The Velvet Rope",
+    "year": 1997
+  },
+  {
+    "rank": 206,
+    "slug": "the-miseducation-of-lauryn-hill-lauryn-hill",
+    "artist": "Lauryn Hill",
+    "title": "The Miseducation of Lauryn Hill",
+    "year": 1998
+  },
+  {
+    "rank": 207,
+    "slug": "toni-braxton-toni-braxton",
+    "artist": "Toni Braxton",
+    "title": "Toni Braxton",
+    "year": 1993
+  },
+  {
+    "rank": 208,
+    "slug": "secrets-toni-braxton",
+    "artist": "Toni Braxton",
+    "title": "Secrets",
+    "year": 1996
+  },
+  {
+    "rank": 209,
+    "slug": "brandy-brandy",
+    "artist": "Brandy",
+    "title": "Brandy",
+    "year": 1994
+  },
+  {
+    "rank": 210,
+    "slug": "the-boy-is-mine-monica",
+    "artist": "Monica",
+    "title": "The Boy Is Mine",
+    "year": 1998
+  },
+  {
+    "rank": 211,
+    "slug": "the-writing-s-on-the-wall-destiny-s-child",
+    "artist": "Destiny's Child",
+    "title": "The Writing's on the Wall",
+    "year": 1999
+  },
+  {
+    "rank": 212,
+    "slug": "survivor-destiny-s-child",
+    "artist": "Destiny's Child",
+    "title": "Survivor",
+    "year": 2001
+  },
+  {
+    "rank": 213,
+    "slug": "spice-spice-girls",
+    "artist": "Spice Girls",
+    "title": "Spice",
+    "year": 1996
+  },
+  {
+    "rank": 214,
+    "slug": "spiceworld-spice-girls",
+    "artist": "Spice Girls",
+    "title": "Spiceworld",
+    "year": 1997
+  },
+  {
+    "rank": 215,
+    "slug": "backstreet-boys-backstreet-boys",
+    "artist": "Backstreet Boys",
+    "title": "Backstreet Boys",
+    "year": 1996
+  },
+  {
+    "rank": 216,
+    "slug": "backstreet-s-back-backstreet-boys",
+    "artist": "Backstreet Boys",
+    "title": "Backstreet's Back",
+    "year": 1997
+  },
+  {
+    "rank": 217,
+    "slug": "black-and-blue-backstreet-boys",
+    "artist": "Backstreet Boys",
+    "title": "Black & Blue",
+    "year": 2000
+  },
+  {
+    "rank": 218,
+    "slug": "no-strings-attached-nsync",
+    "artist": "*NSYNC",
+    "title": "No Strings Attached",
+    "year": 2000
+  },
+  {
+    "rank": 219,
+    "slug": "nsync-nsync",
+    "artist": "*NSYNC",
+    "title": "*NSYNC",
+    "year": 1998
+  },
+  {
+    "rank": 220,
+    "slug": "celebrity-nsync",
+    "artist": "*NSYNC",
+    "title": "Celebrity",
+    "year": 2001
+  },
+  {
+    "rank": 221,
+    "slug": "oops-i-did-it-again-britney-spears",
+    "artist": "Britney Spears",
+    "title": "Oops!... I Did It Again",
+    "year": 2000
+  },
+  {
+    "rank": 222,
+    "slug": "britney-britney-spears",
+    "artist": "Britney Spears",
+    "title": "Britney",
+    "year": 2001
+  },
+  {
+    "rank": 223,
+    "slug": "christina-aguilera-christina-aguilera",
+    "artist": "Christina Aguilera",
+    "title": "Christina Aguilera",
+    "year": 1999
+  },
+  {
+    "rank": 224,
+    "slug": "sweet-kisses-jessica-simpson",
+    "artist": "Jessica Simpson",
+    "title": "Sweet Kisses",
+    "year": 1999
+  },
+  {
+    "rank": 225,
+    "slug": "so-real-mandy-moore",
+    "artist": "Mandy Moore",
+    "title": "So Real",
+    "year": 1999
+  },
+  {
+    "rank": 226,
+    "slug": "big-willie-style-will-smith",
+    "artist": "Will Smith",
+    "title": "Big Willie Style",
+    "year": 1997
+  },
+  {
+    "rank": 227,
+    "slug": "willennium-will-smith",
+    "artist": "Will Smith",
+    "title": "Willennium",
+    "year": 1999
+  },
+  {
+    "rank": 228,
+    "slug": "no-way-out-puff-daddy-and-the-family",
+    "artist": "Puff Daddy & the Family",
+    "title": "No Way Out",
+    "year": 1997
+  },
+  {
+    "rank": 229,
+    "slug": "ready-to-die-the-notorious-b-i-g",
+    "artist": "The Notorious B.I.G.",
+    "title": "Ready to Die",
+    "year": 1994
+  },
+  {
+    "rank": 230,
+    "slug": "life-after-death-the-notorious-b-i-g",
+    "artist": "The Notorious B.I.G.",
+    "title": "Life After Death",
+    "year": 1997
+  },
+  {
+    "rank": 231,
+    "slug": "all-eyez-on-me-2pac",
+    "artist": "2Pac",
+    "title": "All Eyez on Me",
+    "year": 1996
+  },
+  {
+    "rank": 232,
+    "slug": "greatest-hits-2pac",
+    "artist": "2Pac",
+    "title": "Greatest Hits",
+    "year": 1998
+  },
+  {
+    "rank": 233,
+    "slug": "the-chronic-dr-dre",
+    "artist": "Dr. Dre",
+    "title": "The Chronic",
+    "year": 1992
+  },
+  {
+    "rank": 234,
+    "slug": "2001-dr-dre",
+    "artist": "Dr. Dre",
+    "title": "2001",
+    "year": 1999
+  },
+  {
+    "rank": 235,
+    "slug": "doggystyle-snoop-dogg",
+    "artist": "Snoop Dogg",
+    "title": "Doggystyle",
+    "year": 1993
+  },
+  {
+    "rank": 236,
+    "slug": "the-slim-shady-lp-eminem",
+    "artist": "Eminem",
+    "title": "The Slim Shady LP",
+    "year": 1999
+  },
+  {
+    "rank": 237,
+    "slug": "vol-2-hard-knock-life-jay-z",
+    "artist": "Jay-Z",
+    "title": "Vol. 2... Hard Knock Life",
+    "year": 1998
+  },
+  {
+    "rank": 238,
+    "slug": "enter-the-wu-tang-36-chambers-wu-tang-clan",
+    "artist": "Wu-Tang Clan",
+    "title": "Enter the Wu-Tang (36 Chambers)",
+    "year": 1993
+  },
+  {
+    "rank": 239,
+    "slug": "it-s-dark-and-hell-is-hot-dmx",
+    "artist": "DMX",
+    "title": "It's Dark and Hell Is Hot",
+    "year": 1998
+  },
+  {
+    "rank": 240,
+    "slug": "illmatic-nas",
+    "artist": "Nas",
+    "title": "Illmatic",
+    "year": 1994
+  },
+  {
+    "rank": 241,
+    "slug": "aquemini-outkast",
+    "artist": "OutKast",
+    "title": "Aquemini",
+    "year": 1998
+  },
+  {
+    "rank": 242,
+    "slug": "mtv-unplugged-no-2-0-ms-lauryn-hill",
+    "artist": "Ms. Lauryn Hill",
+    "title": "MTV Unplugged No. 2.0",
+    "year": 2002
+  },
+  {
+    "rank": 243,
+    "slug": "in-utero-nirvana",
+    "artist": "Nirvana",
+    "title": "In Utero",
+    "year": 1993
+  },
+  {
+    "rank": 244,
+    "slug": "mtv-unplugged-in-new-york-nirvana",
+    "artist": "Nirvana",
+    "title": "MTV Unplugged in New York",
+    "year": 1994
+  },
+  {
+    "rank": 245,
+    "slug": "vitalogy-pearl-jam",
+    "artist": "Pearl Jam",
+    "title": "Vitalogy",
+    "year": 1994
+  },
+  {
+    "rank": 246,
+    "slug": "badmotorfinger-soundgarden",
+    "artist": "Soundgarden",
+    "title": "Badmotorfinger",
+    "year": 1991
+  },
+  {
+    "rank": 247,
+    "slug": "dirt-alice-in-chains",
+    "artist": "Alice in Chains",
+    "title": "Dirt",
+    "year": 1992
+  },
+  {
+    "rank": 248,
+    "slug": "purple-stone-temple-pilots",
+    "artist": "Stone Temple Pilots",
+    "title": "Purple",
+    "year": 1994
+  },
+  {
+    "rank": 249,
+    "slug": "sixteen-stone-bush",
+    "artist": "Bush",
+    "title": "Sixteen Stone",
+    "year": 1994
+  },
+  {
+    "rank": 250,
+    "slug": "throwing-copper-live",
+    "artist": "Live",
+    "title": "Throwing Copper",
+    "year": 1994
+  },
+  {
+    "rank": 251,
+    "slug": "august-and-everything-after-counting-crows",
+    "artist": "Counting Crows",
+    "title": "August and Everything After",
+    "year": 1993
+  },
+  {
+    "rank": 252,
+    "slug": "recovering-the-satellites-counting-crows",
+    "artist": "Counting Crows",
+    "title": "Recovering the Satellites",
+    "year": 1996
+  },
+  {
+    "rank": 253,
+    "slug": "tuesday-night-music-club-sheryl-crow",
+    "artist": "Sheryl Crow",
+    "title": "Tuesday Night Music Club",
+    "year": 1993
+  },
+  {
+    "rank": 254,
+    "slug": "sheryl-crow-sheryl-crow",
+    "artist": "Sheryl Crow",
+    "title": "Sheryl Crow",
+    "year": 1996
+  },
+  {
+    "rank": 255,
+    "slug": "pieces-of-you-jewel",
+    "artist": "Jewel",
+    "title": "Pieces of You",
+    "year": 1995
+  },
+  {
+    "rank": 256,
+    "slug": "surfacing-sarah-mclachlan",
+    "artist": "Sarah McLachlan",
+    "title": "Surfacing",
+    "year": 1997
+  },
+  {
+    "rank": 257,
+    "slug": "supposed-former-infatuation-junkie-alanis-morissette",
+    "artist": "Alanis Morissette",
+    "title": "Supposed Former Infatuation Junkie",
+    "year": 1998
+  },
+  {
+    "rank": 258,
+    "slug": "left-of-the-middle-natalie-imbruglia",
+    "artist": "Natalie Imbruglia",
+    "title": "Left of the Middle",
+    "year": 1997
+  },
+  {
+    "rank": 259,
+    "slug": "tidal-fiona-apple",
+    "artist": "Fiona Apple",
+    "title": "Tidal",
+    "year": 1996
+  },
+  {
+    "rank": 260,
+    "slug": "tragic-kingdom-no-doubt",
+    "artist": "No Doubt",
+    "title": "Tragic Kingdom",
+    "year": 1995
+  },
+  {
+    "rank": 261,
+    "slug": "dookie-green-day",
+    "artist": "Green Day",
+    "title": "Dookie",
+    "year": 1994
+  },
+  {
+    "rank": 262,
+    "slug": "american-idiot-green-day",
+    "artist": "Green Day",
+    "title": "American Idiot",
+    "year": 2004
+  },
+  {
+    "rank": 263,
+    "slug": "smash-the-offspring",
+    "artist": "The Offspring",
+    "title": "Smash",
+    "year": 1994
+  },
+  {
+    "rank": 264,
+    "slug": "americana-the-offspring",
+    "artist": "The Offspring",
+    "title": "Americana",
+    "year": 1998
+  },
+  {
+    "rank": 265,
+    "slug": "sublime-sublime",
+    "artist": "Sublime",
+    "title": "Sublime",
+    "year": 1996
+  },
+  {
+    "rank": 266,
+    "slug": "floored-sugar-ray",
+    "artist": "Sugar Ray",
+    "title": "Floored",
+    "year": 1997
+  },
+  {
+    "rank": 267,
+    "slug": "astro-lounge-smash-mouth",
+    "artist": "Smash Mouth",
+    "title": "Astro Lounge",
+    "year": 1999
+  },
+  {
+    "rank": 268,
+    "slug": "third-eye-blind-third-eye-blind",
+    "artist": "Third Eye Blind",
+    "title": "Third Eye Blind",
+    "year": 1997
+  },
+  {
+    "rank": 269,
+    "slug": "yourself-or-someone-like-you-matchbox-20",
+    "artist": "Matchbox 20",
+    "title": "Yourself or Someone Like You",
+    "year": 1996
+  },
+  {
+    "rank": 270,
+    "slug": "mad-season-matchbox-twenty",
+    "artist": "Matchbox Twenty",
+    "title": "Mad Season",
+    "year": 2000
+  },
+  {
+    "rank": 271,
+    "slug": "dizzy-up-the-girl-goo-goo-dolls",
+    "artist": "Goo Goo Dolls",
+    "title": "Dizzy Up the Girl",
+    "year": 1998
+  },
+  {
+    "rank": 272,
+    "slug": "human-clay-creed",
+    "artist": "Creed",
+    "title": "Human Clay",
+    "year": 1999
+  },
+  {
+    "rank": 273,
+    "slug": "my-own-prison-creed",
+    "artist": "Creed",
+    "title": "My Own Prison",
+    "year": 1997
+  },
+  {
+    "rank": 274,
+    "slug": "weathered-creed",
+    "artist": "Creed",
+    "title": "Weathered",
+    "year": 2001
+  },
+  {
+    "rank": 275,
+    "slug": "significant-other-limp-bizkit",
+    "artist": "Limp Bizkit",
+    "title": "Significant Other",
+    "year": 1999
+  },
+  {
+    "rank": 276,
+    "slug": "chocolate-starfish-and-the-hot-dog-flavored-water-limp-bizkit",
+    "artist": "Limp Bizkit",
+    "title": "Chocolate Starfish and the Hot Dog Flavored Water",
+    "year": 2000
+  },
+  {
+    "rank": 277,
+    "slug": "follow-the-leader-korn",
+    "artist": "Korn",
+    "title": "Follow the Leader",
+    "year": 1998
+  },
+  {
+    "rank": 278,
+    "slug": "issues-korn",
+    "artist": "Korn",
+    "title": "Issues",
+    "year": 1999
+  },
+  {
+    "rank": 279,
+    "slug": "rage-against-the-machine-rage-against-the-machine",
+    "artist": "Rage Against the Machine",
+    "title": "Rage Against the Machine",
+    "year": 1992
+  },
+  {
+    "rank": 280,
+    "slug": "aenima-tool",
+    "artist": "Tool",
+    "title": "Aenima",
+    "year": 1996
+  },
+  {
+    "rank": 281,
+    "slug": "lateralus-tool",
+    "artist": "Tool",
+    "title": "Lateralus",
+    "year": 2001
+  },
+  {
+    "rank": 282,
+    "slug": "toxicity-system-of-a-down",
+    "artist": "System of a Down",
+    "title": "Toxicity",
+    "year": 2001
+  },
+  {
+    "rank": 283,
+    "slug": "garth-brooks-garth-brooks",
+    "artist": "Garth Brooks",
+    "title": "Garth Brooks",
+    "year": 1989
+  },
+  {
+    "rank": 284,
+    "slug": "sevens-garth-brooks",
+    "artist": "Garth Brooks",
+    "title": "Sevens",
+    "year": 1997
+  },
+  {
+    "rank": 285,
+    "slug": "the-hits-garth-brooks",
+    "artist": "Garth Brooks",
+    "title": "The Hits",
+    "year": 1994
+  },
+  {
+    "rank": 286,
+    "slug": "the-woman-in-me-shania-twain",
+    "artist": "Shania Twain",
+    "title": "The Woman in Me",
+    "year": 1995
+  },
+  {
+    "rank": 287,
+    "slug": "up-shania-twain",
+    "artist": "Shania Twain",
+    "title": "Up!",
+    "year": 2002
+  },
+  {
+    "rank": 288,
+    "slug": "breathe-faith-hill",
+    "artist": "Faith Hill",
+    "title": "Breathe",
+    "year": 1999
+  },
+  {
+    "rank": 289,
+    "slug": "faith-faith-hill",
+    "artist": "Faith Hill",
+    "title": "Faith",
+    "year": 1998
+  },
+  {
+    "rank": 290,
+    "slug": "not-a-moment-too-soon-tim-mcgraw",
+    "artist": "Tim McGraw",
+    "title": "Not a Moment Too Soon",
+    "year": 1994
+  },
+  {
+    "rank": 291,
+    "slug": "everywhere-tim-mcgraw",
+    "artist": "Tim McGraw",
+    "title": "Everywhere",
+    "year": 1997
+  },
+  {
+    "rank": 292,
+    "slug": "wide-open-spaces-dixie-chicks",
+    "artist": "Dixie Chicks",
+    "title": "Wide Open Spaces",
+    "year": 1998
+  },
+  {
+    "rank": 293,
+    "slug": "fly-dixie-chicks",
+    "artist": "Dixie Chicks",
+    "title": "Fly",
+    "year": 1999
+  },
+  {
+    "rank": 294,
+    "slug": "blue-leann-rimes",
+    "artist": "LeAnn Rimes",
+    "title": "Blue",
+    "year": 1996
+  },
+  {
+    "rank": 295,
+    "slug": "you-light-up-my-life-leann-rimes",
+    "artist": "LeAnn Rimes",
+    "title": "You Light Up My Life",
+    "year": 1997
+  },
+  {
+    "rank": 296,
+    "slug": "brand-new-man-brooks-and-dunn",
+    "artist": "Brooks & Dunn",
+    "title": "Brand New Man",
+    "year": 1991
+  },
+  {
+    "rank": 297,
+    "slug": "a-lot-about-livin-alan-jackson",
+    "artist": "Alan Jackson",
+    "title": "A Lot About Livin'",
+    "year": 1992
+  },
+  {
+    "rank": 298,
+    "slug": "pure-country-george-strait",
+    "artist": "George Strait",
+    "title": "Pure Country",
+    "year": 1992
+  },
+  {
+    "rank": 299,
+    "slug": "greatest-hits-volume-two-reba-mcentire",
+    "artist": "Reba McEntire",
+    "title": "Greatest Hits Volume Two",
+    "year": 1993
+  },
+  {
+    "rank": 300,
+    "slug": "when-love-finds-you-vince-gill",
+    "artist": "Vince Gill",
+    "title": "When Love Finds You",
+    "year": 1994
+  },
+  {
+    "rank": 301,
+    "slug": "wynonna-wynonna",
+    "artist": "Wynonna",
+    "title": "Wynonna",
+    "year": 1992
+  },
+  {
+    "rank": 302,
+    "slug": "songbook-trisha-yearwood",
+    "artist": "Trisha Yearwood",
+    "title": "Songbook",
+    "year": 1997
+  },
+  {
+    "rank": 303,
+    "slug": "how-do-you-like-me-now-toby-keith",
+    "artist": "Toby Keith",
+    "title": "How Do You Like Me Now?!",
+    "year": 1999
+  },
+  {
+    "rank": 304,
+    "slug": "no-shoes-no-shirt-no-problems-kenny-chesney",
+    "artist": "Kenny Chesney",
+    "title": "No Shoes, No Shirt, No Problems",
+    "year": 2002
+  },
+  {
+    "rank": 305,
+    "slug": "when-the-sun-goes-down-kenny-chesney",
+    "artist": "Kenny Chesney",
+    "title": "When the Sun Goes Down",
+    "year": 2004
+  },
+  {
+    "rank": 306,
+    "slug": "let-go-avril-lavigne",
+    "artist": "Avril Lavigne",
+    "title": "Let Go",
+    "year": 2002
+  },
+  {
+    "rank": 307,
+    "slug": "under-my-skin-avril-lavigne",
+    "artist": "Avril Lavigne",
+    "title": "Under My Skin",
+    "year": 2004
+  },
+  {
+    "rank": 308,
+    "slug": "breakaway-kelly-clarkson",
+    "artist": "Kelly Clarkson",
+    "title": "Breakaway",
+    "year": 2004
+  },
+  {
+    "rank": 309,
+    "slug": "thankful-kelly-clarkson",
+    "artist": "Kelly Clarkson",
+    "title": "Thankful",
+    "year": 2003
+  },
+  {
+    "rank": 310,
+    "slug": "dangerously-in-love-beyonce",
+    "artist": "Beyonce",
+    "title": "Dangerously in Love",
+    "year": 2003
+  },
+  {
+    "rank": 311,
+    "slug": "b-day-beyonce",
+    "artist": "Beyonce",
+    "title": "B'Day",
+    "year": 2006
+  },
+  {
+    "rank": 312,
+    "slug": "i-am-sasha-fierce-beyonce",
+    "artist": "Beyonce",
+    "title": "I Am... Sasha Fierce",
+    "year": 2008
+  },
+  {
+    "rank": 313,
+    "slug": "justified-justin-timberlake",
+    "artist": "Justin Timberlake",
+    "title": "Justified",
+    "year": 2002
+  },
+  {
+    "rank": 314,
+    "slug": "futuresex-lovesounds-justin-timberlake",
+    "artist": "Justin Timberlake",
+    "title": "FutureSex/LoveSounds",
+    "year": 2006
+  },
+  {
+    "rank": 315,
+    "slug": "songs-in-a-minor-alicia-keys",
+    "artist": "Alicia Keys",
+    "title": "Songs in A Minor",
+    "year": 2001
+  },
+  {
+    "rank": 316,
+    "slug": "the-diary-of-alicia-keys-alicia-keys",
+    "artist": "Alicia Keys",
+    "title": "The Diary of Alicia Keys",
+    "year": 2003
+  },
+  {
+    "rank": 317,
+    "slug": "room-for-squares-john-mayer",
+    "artist": "John Mayer",
+    "title": "Room for Squares",
+    "year": 2001
+  },
+  {
+    "rank": 318,
+    "slug": "continuum-john-mayer",
+    "artist": "John Mayer",
+    "title": "Continuum",
+    "year": 2006
+  },
+  {
+    "rank": 319,
+    "slug": "in-between-dreams-jack-johnson",
+    "artist": "Jack Johnson",
+    "title": "In Between Dreams",
+    "year": 2005
+  },
+  {
+    "rank": 320,
+    "slug": "songs-about-jane-maroon-5",
+    "artist": "Maroon 5",
+    "title": "Songs About Jane",
+    "year": 2002
+  },
+  {
+    "rank": 321,
+    "slug": "it-won-t-be-soon-before-long-maroon-5",
+    "artist": "Maroon 5",
+    "title": "It Won't Be Soon Before Long",
+    "year": 2007
+  },
+  {
+    "rank": 322,
+    "slug": "dreaming-out-loud-onerepublic",
+    "artist": "OneRepublic",
+    "title": "Dreaming Out Loud",
+    "year": 2007
+  },
+  {
+    "rank": 323,
+    "slug": "drops-of-jupiter-train",
+    "artist": "Train",
+    "title": "Drops of Jupiter",
+    "year": 2001
+  },
+  {
+    "rank": 324,
+    "slug": "save-me-san-francisco-train",
+    "artist": "Train",
+    "title": "Save Me, San Francisco",
+    "year": 2009
+  },
+  {
+    "rank": 325,
+    "slug": "silver-side-up-nickelback",
+    "artist": "Nickelback",
+    "title": "Silver Side Up",
+    "year": 2001
+  },
+  {
+    "rank": 326,
+    "slug": "the-long-road-nickelback",
+    "artist": "Nickelback",
+    "title": "The Long Road",
+    "year": 2003
+  },
+  {
+    "rank": 327,
+    "slug": "all-the-right-reasons-nickelback",
+    "artist": "Nickelback",
+    "title": "All the Right Reasons",
+    "year": 2005
+  },
+  {
+    "rank": 328,
+    "slug": "daughtry-daughtry",
+    "artist": "Daughtry",
+    "title": "Daughtry",
+    "year": 2006
+  },
+  {
+    "rank": 329,
+    "slug": "x-and-y-coldplay",
+    "artist": "Coldplay",
+    "title": "X&Y",
+    "year": 2005
+  },
+  {
+    "rank": 330,
+    "slug": "viva-la-vida-or-death-and-all-his-friends-coldplay",
+    "artist": "Coldplay",
+    "title": "Viva la Vida or Death and All His Friends",
+    "year": 2008
+  },
+  {
+    "rank": 331,
+    "slug": "mylo-xyloto-coldplay",
+    "artist": "Coldplay",
+    "title": "Mylo Xyloto",
+    "year": 2011
+  },
+  {
+    "rank": 332,
+    "slug": "meteora-linkin-park",
+    "artist": "Linkin Park",
+    "title": "Meteora",
+    "year": 2003
+  },
+  {
+    "rank": 333,
+    "slug": "minutes-to-midnight-linkin-park",
+    "artist": "Linkin Park",
+    "title": "Minutes to Midnight",
+    "year": 2007
+  },
+  {
+    "rank": 334,
+    "slug": "fallen-evanescence",
+    "artist": "Evanescence",
+    "title": "Fallen",
+    "year": 2003
+  },
+  {
+    "rank": 335,
+    "slug": "the-open-door-evanescence",
+    "artist": "Evanescence",
+    "title": "The Open Door",
+    "year": 2006
+  },
+  {
+    "rank": 336,
+    "slug": "the-black-parade-my-chemical-romance",
+    "artist": "My Chemical Romance",
+    "title": "The Black Parade",
+    "year": 2006
+  },
+  {
+    "rank": 337,
+    "slug": "from-under-the-cork-tree-fall-out-boy",
+    "artist": "Fall Out Boy",
+    "title": "From Under the Cork Tree",
+    "year": 2005
+  },
+  {
+    "rank": 338,
+    "slug": "infinity-on-high-fall-out-boy",
+    "artist": "Fall Out Boy",
+    "title": "Infinity on High",
+    "year": 2007
+  },
+  {
+    "rank": 339,
+    "slug": "a-fever-you-can-t-sweat-out-panic-at-the-disco",
+    "artist": "Panic! at the Disco",
+    "title": "A Fever You Can't Sweat Out",
+    "year": 2005
+  },
+  {
+    "rank": 340,
+    "slug": "riot-paramore",
+    "artist": "Paramore",
+    "title": "Riot!",
+    "year": 2007
+  },
+  {
+    "rank": 341,
+    "slug": "there-is-nothing-left-to-lose-foo-fighters",
+    "artist": "Foo Fighters",
+    "title": "There Is Nothing Left to Lose",
+    "year": 1999
+  },
+  {
+    "rank": 342,
+    "slug": "one-by-one-foo-fighters",
+    "artist": "Foo Fighters",
+    "title": "One by One",
+    "year": 2002
+  },
+  {
+    "rank": 343,
+    "slug": "in-your-honor-foo-fighters",
+    "artist": "Foo Fighters",
+    "title": "In Your Honor",
+    "year": 2005
+  },
+  {
+    "rank": 344,
+    "slug": "echoes-silence-patience-and-grace-foo-fighters",
+    "artist": "Foo Fighters",
+    "title": "Echoes, Silence, Patience & Grace",
+    "year": 2007
+  },
+  {
+    "rank": 345,
+    "slug": "wasting-light-foo-fighters",
+    "artist": "Foo Fighters",
+    "title": "Wasting Light",
+    "year": 2011
+  },
+  {
+    "rank": 346,
+    "slug": "hot-fuss-the-killers",
+    "artist": "The Killers",
+    "title": "Hot Fuss",
+    "year": 2004
+  },
+  {
+    "rank": 347,
+    "slug": "sam-s-town-the-killers",
+    "artist": "The Killers",
+    "title": "Sam's Town",
+    "year": 2006
+  },
+  {
+    "rank": 348,
+    "slug": "franz-ferdinand-franz-ferdinand",
+    "artist": "Franz Ferdinand",
+    "title": "Franz Ferdinand",
+    "year": 2004
+  },
+  {
+    "rank": 349,
+    "slug": "is-this-it-the-strokes",
+    "artist": "The Strokes",
+    "title": "Is This It",
+    "year": 2001
+  },
+  {
+    "rank": 350,
+    "slug": "only-by-the-night-kings-of-leon",
+    "artist": "Kings of Leon",
+    "title": "Only by the Night",
+    "year": 2008
+  },
+  {
+    "rank": 351,
+    "slug": "whatever-people-say-i-am-that-s-what-i-m-not-arctic-monkeys",
+    "artist": "Arctic Monkeys",
+    "title": "Whatever People Say I Am, That's What I'm Not",
+    "year": 2006
+  },
+  {
+    "rank": 352,
+    "slug": "am-arctic-monkeys",
+    "artist": "Arctic Monkeys",
+    "title": "AM",
+    "year": 2013
+  },
+  {
+    "rank": 353,
+    "slug": "8701-usher",
+    "artist": "Usher",
+    "title": "8701",
+    "year": 2001
+  },
+  {
+    "rank": 354,
+    "slug": "here-i-stand-usher",
+    "artist": "Usher",
+    "title": "Here I Stand",
+    "year": 2008
+  },
+  {
+    "rank": 355,
+    "slug": "raymond-v-raymond-usher",
+    "artist": "Usher",
+    "title": "Raymond v. Raymond",
+    "year": 2010
+  },
+  {
+    "rank": 356,
+    "slug": "the-breakthrough-mary-j-blige",
+    "artist": "Mary J. Blige",
+    "title": "The Breakthrough",
+    "year": 2005
+  },
+  {
+    "rank": 357,
+    "slug": "in-my-own-words-ne-yo",
+    "artist": "Ne-Yo",
+    "title": "In My Own Words",
+    "year": 2006
+  },
+  {
+    "rank": 358,
+    "slug": "chris-brown-chris-brown",
+    "artist": "Chris Brown",
+    "title": "Chris Brown",
+    "year": 2005
+  },
+  {
+    "rank": 359,
+    "slug": "exclusive-chris-brown",
+    "artist": "Chris Brown",
+    "title": "Exclusive",
+    "year": 2007
+  },
+  {
+    "rank": 360,
+    "slug": "music-of-the-sun-rihanna",
+    "artist": "Rihanna",
+    "title": "Music of the Sun",
+    "year": 2005
+  },
+  {
+    "rank": 361,
+    "slug": "a-girl-like-me-rihanna",
+    "artist": "Rihanna",
+    "title": "A Girl Like Me",
+    "year": 2006
+  },
+  {
+    "rank": 362,
+    "slug": "good-girl-gone-bad-rihanna",
+    "artist": "Rihanna",
+    "title": "Good Girl Gone Bad",
+    "year": 2007
+  },
+  {
+    "rank": 363,
+    "slug": "rated-r-rihanna",
+    "artist": "Rihanna",
+    "title": "Rated R",
+    "year": 2009
+  },
+  {
+    "rank": 364,
+    "slug": "loud-rihanna",
+    "artist": "Rihanna",
+    "title": "Loud",
+    "year": 2010
+  },
+  {
+    "rank": 365,
+    "slug": "talk-that-talk-rihanna",
+    "artist": "Rihanna",
+    "title": "Talk That Talk",
+    "year": 2011
+  },
+  {
+    "rank": 366,
+    "slug": "unapologetic-rihanna",
+    "artist": "Rihanna",
+    "title": "Unapologetic",
+    "year": 2012
+  },
+  {
+    "rank": 367,
+    "slug": "anti-rihanna",
+    "artist": "Rihanna",
+    "title": "Anti",
+    "year": 2016
+  },
+  {
+    "rank": 368,
+    "slug": "get-rich-or-die-tryin-50-cent",
+    "artist": "50 Cent",
+    "title": "Get Rich or Die Tryin'",
+    "year": 2003
+  },
+  {
+    "rank": 369,
+    "slug": "the-massacre-50-cent",
+    "artist": "50 Cent",
+    "title": "The Massacre",
+    "year": 2005
+  },
+  {
+    "rank": 370,
+    "slug": "the-college-dropout-kanye-west",
+    "artist": "Kanye West",
+    "title": "The College Dropout",
+    "year": 2004
+  },
+  {
+    "rank": 371,
+    "slug": "late-registration-kanye-west",
+    "artist": "Kanye West",
+    "title": "Late Registration",
+    "year": 2005
+  },
+  {
+    "rank": 372,
+    "slug": "graduation-kanye-west",
+    "artist": "Kanye West",
+    "title": "Graduation",
+    "year": 2007
+  },
+  {
+    "rank": 373,
+    "slug": "808s-and-heartbreak-kanye-west",
+    "artist": "Kanye West",
+    "title": "808s & Heartbreak",
+    "year": 2008
+  },
+  {
+    "rank": 374,
+    "slug": "my-beautiful-dark-twisted-fantasy-kanye-west",
+    "artist": "Kanye West",
+    "title": "My Beautiful Dark Twisted Fantasy",
+    "year": 2010
+  },
+  {
+    "rank": 375,
+    "slug": "yeezus-kanye-west",
+    "artist": "Kanye West",
+    "title": "Yeezus",
+    "year": 2013
+  },
+  {
+    "rank": 376,
+    "slug": "encore-eminem",
+    "artist": "Eminem",
+    "title": "Encore",
+    "year": 2004
+  },
+  {
+    "rank": 377,
+    "slug": "relapse-eminem",
+    "artist": "Eminem",
+    "title": "Relapse",
+    "year": 2009
+  },
+  {
+    "rank": 378,
+    "slug": "recovery-eminem",
+    "artist": "Eminem",
+    "title": "Recovery",
+    "year": 2010
+  },
+  {
+    "rank": 379,
+    "slug": "the-marshall-mathers-lp-2-eminem",
+    "artist": "Eminem",
+    "title": "The Marshall Mathers LP 2",
+    "year": 2013
+  },
+  {
+    "rank": 380,
+    "slug": "curtain-call-the-hits-eminem",
+    "artist": "Eminem",
+    "title": "Curtain Call: The Hits",
+    "year": 2005
+  },
+  {
+    "rank": 381,
+    "slug": "the-black-album-jay-z",
+    "artist": "Jay-Z",
+    "title": "The Black Album",
+    "year": 2003
+  },
+  {
+    "rank": 382,
+    "slug": "american-gangster-jay-z",
+    "artist": "Jay-Z",
+    "title": "American Gangster",
+    "year": 2007
+  },
+  {
+    "rank": 383,
+    "slug": "the-blueprint-3-jay-z",
+    "artist": "Jay-Z",
+    "title": "The Blueprint 3",
+    "year": 2009
+  },
+  {
+    "rank": 384,
+    "slug": "watch-the-throne-jay-z-and-kanye-west",
+    "artist": "Jay-Z and Kanye West",
+    "title": "Watch the Throne",
+    "year": 2011
+  },
+  {
+    "rank": 385,
+    "slug": "stankonia-outkast",
+    "artist": "OutKast",
+    "title": "Stankonia",
+    "year": 2000
+  },
+  {
+    "rank": 386,
+    "slug": "speakerboxxx-the-love-below-outkast",
+    "artist": "OutKast",
+    "title": "Speakerboxxx/The Love Below",
+    "year": 2003
+  },
+  {
+    "rank": 387,
+    "slug": "word-of-mouf-ludacris",
+    "artist": "Ludacris",
+    "title": "Word of Mouf",
+    "year": 2001
+  },
+  {
+    "rank": 388,
+    "slug": "paper-trail-t-i",
+    "artist": "T.I.",
+    "title": "Paper Trail",
+    "year": 2008
+  },
+  {
+    "rank": 389,
+    "slug": "tha-carter-iii-lil-wayne",
+    "artist": "Lil Wayne",
+    "title": "Tha Carter III",
+    "year": 2008
+  },
+  {
+    "rank": 390,
+    "slug": "tha-carter-iv-lil-wayne",
+    "artist": "Lil Wayne",
+    "title": "Tha Carter IV",
+    "year": 2011
+  },
+  {
+    "rank": 391,
+    "slug": "thank-me-later-drake",
+    "artist": "Drake",
+    "title": "Thank Me Later",
+    "year": 2010
+  },
+  {
+    "rank": 392,
+    "slug": "take-care-drake",
+    "artist": "Drake",
+    "title": "Take Care",
+    "year": 2011
+  },
+  {
+    "rank": 393,
+    "slug": "nothing-was-the-same-drake",
+    "artist": "Drake",
+    "title": "Nothing Was the Same",
+    "year": 2013
+  },
+  {
+    "rank": 394,
+    "slug": "if-you-re-reading-this-it-s-too-late-drake",
+    "artist": "Drake",
+    "title": "If You're Reading This It's Too Late",
+    "year": 2015
+  },
+  {
+    "rank": 395,
+    "slug": "views-drake",
+    "artist": "Drake",
+    "title": "Views",
+    "year": 2016
+  },
+  {
+    "rank": 396,
+    "slug": "scorpion-drake",
+    "artist": "Drake",
+    "title": "Scorpion",
+    "year": 2018
+  },
+  {
+    "rank": 397,
+    "slug": "certified-lover-boy-drake",
+    "artist": "Drake",
+    "title": "Certified Lover Boy",
+    "year": 2021
+  },
+  {
+    "rank": 398,
+    "slug": "ds2-future",
+    "artist": "Future",
+    "title": "DS2",
+    "year": 2015
+  },
+  {
+    "rank": 399,
+    "slug": "2014-forest-hills-drive-j-cole",
+    "artist": "J. Cole",
+    "title": "2014 Forest Hills Drive",
+    "year": 2014
+  },
+  {
+    "rank": 400,
+    "slug": "kod-j-cole",
+    "artist": "J. Cole",
+    "title": "KOD",
+    "year": 2018
+  },
+  {
+    "rank": 401,
+    "slug": "good-kid-m-a-a-d-city-kendrick-lamar",
+    "artist": "Kendrick Lamar",
+    "title": "good kid, m.A.A.d city",
+    "year": 2012
+  },
+  {
+    "rank": 402,
+    "slug": "to-pimp-a-butterfly-kendrick-lamar",
+    "artist": "Kendrick Lamar",
+    "title": "To Pimp a Butterfly",
+    "year": 2015
+  },
+  {
+    "rank": 403,
+    "slug": "damn-kendrick-lamar",
+    "artist": "Kendrick Lamar",
+    "title": "DAMN.",
+    "year": 2017
+  },
+  {
+    "rank": 404,
+    "slug": "mr-morale-and-the-big-steppers-kendrick-lamar",
+    "artist": "Kendrick Lamar",
+    "title": "Mr. Morale & the Big Steppers",
+    "year": 2022
+  },
+  {
+    "rank": 405,
+    "slug": "astroworld-travis-scott",
+    "artist": "Travis Scott",
+    "title": "Astroworld",
+    "year": 2018
+  },
+  {
+    "rank": 406,
+    "slug": "stoney-post-malone",
+    "artist": "Post Malone",
+    "title": "Stoney",
+    "year": 2016
+  },
+  {
+    "rank": 407,
+    "slug": "beerbongs-and-bentleys-post-malone",
+    "artist": "Post Malone",
+    "title": "Beerbongs & Bentleys",
+    "year": 2018
+  },
+  {
+    "rank": 408,
+    "slug": "hollywood-s-bleeding-post-malone",
+    "artist": "Post Malone",
+    "title": "Hollywood's Bleeding",
+    "year": 2019
+  },
+  {
+    "rank": 409,
+    "slug": "invasion-of-privacy-cardi-b",
+    "artist": "Cardi B",
+    "title": "Invasion of Privacy",
+    "year": 2018
+  },
+  {
+    "rank": 410,
+    "slug": "culture-migos",
+    "artist": "Migos",
+    "title": "Culture",
+    "year": 2017
+  },
+  {
+    "rank": 411,
+    "slug": "culture-ii-migos",
+    "artist": "Migos",
+    "title": "Culture II",
+    "year": 2018
+  },
+  {
+    "rank": 412,
+    "slug": "issa-album-21-savage",
+    "artist": "21 Savage",
+    "title": "Issa Album",
+    "year": 2017
+  },
+  {
+    "rank": 413,
+    "slug": "goodbye-and-good-riddance-juice-wrld",
+    "artist": "Juice WRLD",
+    "title": "Goodbye & Good Riddance",
+    "year": 2018
+  },
+  {
+    "rank": 414,
+    "slug": "death-race-for-love-juice-wrld",
+    "artist": "Juice WRLD",
+    "title": "Death Race for Love",
+    "year": 2019
+  },
+  {
+    "rank": 415,
+    "slug": "19-adele",
+    "artist": "Adele",
+    "title": "19",
+    "year": 2008
+  },
+  {
+    "rank": 416,
+    "slug": "30-adele",
+    "artist": "Adele",
+    "title": "30",
+    "year": 2021
+  },
+  {
+    "rank": 417,
+    "slug": "taylor-swift-taylor-swift",
+    "artist": "Taylor Swift",
+    "title": "Taylor Swift",
+    "year": 2006
+  },
+  {
+    "rank": 418,
+    "slug": "fearless-taylor-swift",
+    "artist": "Taylor Swift",
+    "title": "Fearless",
+    "year": 2008
+  },
+  {
+    "rank": 419,
+    "slug": "speak-now-taylor-swift",
+    "artist": "Taylor Swift",
+    "title": "Speak Now",
+    "year": 2010
+  },
+  {
+    "rank": 420,
+    "slug": "red-taylor-swift",
+    "artist": "Taylor Swift",
+    "title": "Red",
+    "year": 2012
+  },
+  {
+    "rank": 421,
+    "slug": "1989-taylor-swift",
+    "artist": "Taylor Swift",
+    "title": "1989",
+    "year": 2014
+  },
+  {
+    "rank": 422,
+    "slug": "reputation-taylor-swift",
+    "artist": "Taylor Swift",
+    "title": "Reputation",
+    "year": 2017
+  },
+  {
+    "rank": 423,
+    "slug": "lover-taylor-swift",
+    "artist": "Taylor Swift",
+    "title": "Lover",
+    "year": 2019
+  },
+  {
+    "rank": 424,
+    "slug": "folklore-taylor-swift",
+    "artist": "Taylor Swift",
+    "title": "Folklore",
+    "year": 2020
+  },
+  {
+    "rank": 425,
+    "slug": "evermore-taylor-swift",
+    "artist": "Taylor Swift",
+    "title": "Evermore",
+    "year": 2020
+  },
+  {
+    "rank": 426,
+    "slug": "midnights-taylor-swift",
+    "artist": "Taylor Swift",
+    "title": "Midnights",
+    "year": 2022
+  },
+  {
+    "rank": 427,
+    "slug": "the-fame-lady-gaga",
+    "artist": "Lady Gaga",
+    "title": "The Fame",
+    "year": 2008
+  },
+  {
+    "rank": 428,
+    "slug": "the-fame-monster-lady-gaga",
+    "artist": "Lady Gaga",
+    "title": "The Fame Monster",
+    "year": 2009
+  },
+  {
+    "rank": 429,
+    "slug": "born-this-way-lady-gaga",
+    "artist": "Lady Gaga",
+    "title": "Born This Way",
+    "year": 2011
+  },
+  {
+    "rank": 430,
+    "slug": "artpop-lady-gaga",
+    "artist": "Lady Gaga",
+    "title": "ARTPOP",
+    "year": 2013
+  },
+  {
+    "rank": 431,
+    "slug": "joanne-lady-gaga",
+    "artist": "Lady Gaga",
+    "title": "Joanne",
+    "year": 2016
+  },
+  {
+    "rank": 432,
+    "slug": "chromatica-lady-gaga",
+    "artist": "Lady Gaga",
+    "title": "Chromatica",
+    "year": 2020
+  },
+  {
+    "rank": 433,
+    "slug": "one-of-the-boys-katy-perry",
+    "artist": "Katy Perry",
+    "title": "One of the Boys",
+    "year": 2008
+  },
+  {
+    "rank": 434,
+    "slug": "teenage-dream-katy-perry",
+    "artist": "Katy Perry",
+    "title": "Teenage Dream",
+    "year": 2010
+  },
+  {
+    "rank": 435,
+    "slug": "prism-katy-perry",
+    "artist": "Katy Perry",
+    "title": "Prism",
+    "year": 2013
+  },
+  {
+    "rank": 436,
+    "slug": "doo-wops-and-hooligans-bruno-mars",
+    "artist": "Bruno Mars",
+    "title": "Doo-Wops & Hooligans",
+    "year": 2010
+  },
+  {
+    "rank": 437,
+    "slug": "unorthodox-jukebox-bruno-mars",
+    "artist": "Bruno Mars",
+    "title": "Unorthodox Jukebox",
+    "year": 2012
+  },
+  {
+    "rank": 438,
+    "slug": "24k-magic-bruno-mars",
+    "artist": "Bruno Mars",
+    "title": "24K Magic",
+    "year": 2016
+  },
+  {
+    "rank": 439,
+    "slug": "my-world-2-0-justin-bieber",
+    "artist": "Justin Bieber",
+    "title": "My World 2.0",
+    "year": 2010
+  },
+  {
+    "rank": 440,
+    "slug": "believe-justin-bieber",
+    "artist": "Justin Bieber",
+    "title": "Believe",
+    "year": 2012
+  },
+  {
+    "rank": 441,
+    "slug": "purpose-justin-bieber",
+    "artist": "Justin Bieber",
+    "title": "Purpose",
+    "year": 2015
+  },
+  {
+    "rank": 442,
+    "slug": "justice-justin-bieber",
+    "artist": "Justin Bieber",
+    "title": "Justice",
+    "year": 2021
+  },
+  {
+    "rank": 443,
+    "slug": "up-all-night-one-direction",
+    "artist": "One Direction",
+    "title": "Up All Night",
+    "year": 2011
+  },
+  {
+    "rank": 444,
+    "slug": "take-me-home-one-direction",
+    "artist": "One Direction",
+    "title": "Take Me Home",
+    "year": 2012
+  },
+  {
+    "rank": 445,
+    "slug": "midnight-memories-one-direction",
+    "artist": "One Direction",
+    "title": "Midnight Memories",
+    "year": 2013
+  },
+  {
+    "rank": 446,
+    "slug": "four-one-direction",
+    "artist": "One Direction",
+    "title": "Four",
+    "year": 2014
+  },
+  {
+    "rank": 447,
+    "slug": "yours-truly-ariana-grande",
+    "artist": "Ariana Grande",
+    "title": "Yours Truly",
+    "year": 2013
+  },
+  {
+    "rank": 448,
+    "slug": "my-everything-ariana-grande",
+    "artist": "Ariana Grande",
+    "title": "My Everything",
+    "year": 2014
+  },
+  {
+    "rank": 449,
+    "slug": "dangerous-woman-ariana-grande",
+    "artist": "Ariana Grande",
+    "title": "Dangerous Woman",
+    "year": 2016
+  },
+  {
+    "rank": 450,
+    "slug": "sweetener-ariana-grande",
+    "artist": "Ariana Grande",
+    "title": "Sweetener",
+    "year": 2018
+  },
+  {
+    "rank": 451,
+    "slug": "thank-u-next-ariana-grande",
+    "artist": "Ariana Grande",
+    "title": "Thank U, Next",
+    "year": 2019
+  },
+  {
+    "rank": 452,
+    "slug": "positions-ariana-grande",
+    "artist": "Ariana Grande",
+    "title": "Positions",
+    "year": 2020
+  },
+  {
+    "rank": 453,
+    "slug": "stars-dance-selena-gomez",
+    "artist": "Selena Gomez",
+    "title": "Stars Dance",
+    "year": 2013
+  },
+  {
+    "rank": 454,
+    "slug": "confident-demi-lovato",
+    "artist": "Demi Lovato",
+    "title": "Confident",
+    "year": 2015
+  },
+  {
+    "rank": 455,
+    "slug": "bangerz-miley-cyrus",
+    "artist": "Miley Cyrus",
+    "title": "Bangerz",
+    "year": 2013
+  },
+  {
+    "rank": 456,
+    "slug": "plastic-hearts-miley-cyrus",
+    "artist": "Miley Cyrus",
+    "title": "Plastic Hearts",
+    "year": 2020
+  },
+  {
+    "rank": 457,
+    "slug": "in-the-lonely-hour-sam-smith",
+    "artist": "Sam Smith",
+    "title": "In the Lonely Hour",
+    "year": 2014
+  },
+  {
+    "rank": 458,
+    "slug": "1000-forms-of-fear-sia",
+    "artist": "Sia",
+    "title": "1000 Forms of Fear",
+    "year": 2014
+  },
+  {
+    "rank": 459,
+    "slug": "hozier-hozier",
+    "artist": "Hozier",
+    "title": "Hozier",
+    "year": 2014
+  },
+  {
+    "rank": 460,
+    "slug": "plus-ed-sheeran",
+    "artist": "Ed Sheeran",
+    "title": "+",
+    "year": 2011
+  },
+  {
+    "rank": 461,
+    "slug": "x-ed-sheeran",
+    "artist": "Ed Sheeran",
+    "title": "x",
+    "year": 2014
+  },
+  {
+    "rank": 462,
+    "slug": "divide-ed-sheeran",
+    "artist": "Ed Sheeran",
+    "title": "Divide",
+    "year": 2017
+  },
+  {
+    "rank": 463,
+    "slug": "no-6-collaborations-project-ed-sheeran",
+    "artist": "Ed Sheeran",
+    "title": "No.6 Collaborations Project",
+    "year": 2019
+  },
+  {
+    "rank": 464,
+    "slug": "equals-ed-sheeran",
+    "artist": "Ed Sheeran",
+    "title": "Equals",
+    "year": 2021
+  },
+  {
+    "rank": 465,
+    "slug": "harry-styles-harry-styles",
+    "artist": "Harry Styles",
+    "title": "Harry Styles",
+    "year": 2017
+  },
+  {
+    "rank": 466,
+    "slug": "fine-line-harry-styles",
+    "artist": "Harry Styles",
+    "title": "Fine Line",
+    "year": 2019
+  },
+  {
+    "rank": 467,
+    "slug": "harry-s-house-harry-styles",
+    "artist": "Harry Styles",
+    "title": "Harry's House",
+    "year": 2022
+  },
+  {
+    "rank": 468,
+    "slug": "illuminate-shawn-mendes",
+    "artist": "Shawn Mendes",
+    "title": "Illuminate",
+    "year": 2016
+  },
+  {
+    "rank": 469,
+    "slug": "shawn-mendes-shawn-mendes",
+    "artist": "Shawn Mendes",
+    "title": "Shawn Mendes",
+    "year": 2018
+  },
+  {
+    "rank": 470,
+    "slug": "camila-camila-cabello",
+    "artist": "Camila Cabello",
+    "title": "Camila",
+    "year": 2018
+  },
+  {
+    "rank": 471,
+    "slug": "beauty-behind-the-madness-the-weeknd",
+    "artist": "The Weeknd",
+    "title": "Beauty Behind the Madness",
+    "year": 2015
+  },
+  {
+    "rank": 472,
+    "slug": "starboy-the-weeknd",
+    "artist": "The Weeknd",
+    "title": "Starboy",
+    "year": 2016
+  },
+  {
+    "rank": 473,
+    "slug": "after-hours-the-weeknd",
+    "artist": "The Weeknd",
+    "title": "After Hours",
+    "year": 2020
+  },
+  {
+    "rank": 474,
+    "slug": "dawn-fm-the-weeknd",
+    "artist": "The Weeknd",
+    "title": "Dawn FM",
+    "year": 2022
+  },
+  {
+    "rank": 475,
+    "slug": "when-we-all-fall-asleep-where-do-we-go-billie-eilish",
+    "artist": "Billie Eilish",
+    "title": "When We All Fall Asleep, Where Do We Go?",
+    "year": 2019
+  },
+  {
+    "rank": 476,
+    "slug": "happier-than-ever-billie-eilish",
+    "artist": "Billie Eilish",
+    "title": "Happier Than Ever",
+    "year": 2021
+  },
+  {
+    "rank": 477,
+    "slug": "sour-olivia-rodrigo",
+    "artist": "Olivia Rodrigo",
+    "title": "Sour",
+    "year": 2021
+  },
+  {
+    "rank": 478,
+    "slug": "guts-olivia-rodrigo",
+    "artist": "Olivia Rodrigo",
+    "title": "Guts",
+    "year": 2023
+  },
+  {
+    "rank": 479,
+    "slug": "hot-pink-doja-cat",
+    "artist": "Doja Cat",
+    "title": "Hot Pink",
+    "year": 2019
+  },
+  {
+    "rank": 480,
+    "slug": "planet-her-doja-cat",
+    "artist": "Doja Cat",
+    "title": "Planet Her",
+    "year": 2021
+  },
+  {
+    "rank": 481,
+    "slug": "dua-lipa-dua-lipa",
+    "artist": "Dua Lipa",
+    "title": "Dua Lipa",
+    "year": 2017
+  },
+  {
+    "rank": 482,
+    "slug": "future-nostalgia-dua-lipa",
+    "artist": "Dua Lipa",
+    "title": "Future Nostalgia",
+    "year": 2020
+  },
+  {
+    "rank": 483,
+    "slug": "badlands-halsey",
+    "artist": "Halsey",
+    "title": "Badlands",
+    "year": 2015
+  },
+  {
+    "rank": 484,
+    "slug": "manic-halsey",
+    "artist": "Halsey",
+    "title": "Manic",
+    "year": 2020
+  },
+  {
+    "rank": 485,
+    "slug": "born-to-die-lana-del-rey",
+    "artist": "Lana Del Rey",
+    "title": "Born to Die",
+    "year": 2012
+  },
+  {
+    "rank": 486,
+    "slug": "ultraviolence-lana-del-rey",
+    "artist": "Lana Del Rey",
+    "title": "Ultraviolence",
+    "year": 2014
+  },
+  {
+    "rank": 487,
+    "slug": "norman-fucking-rockwell-lana-del-rey",
+    "artist": "Lana Del Rey",
+    "title": "Norman Fucking Rockwell!",
+    "year": 2019
+  },
+  {
+    "rank": 488,
+    "slug": "pure-heroine-lorde",
+    "artist": "Lorde",
+    "title": "Pure Heroine",
+    "year": 2013
+  },
+  {
+    "rank": 489,
+    "slug": "melodrama-lorde",
+    "artist": "Lorde",
+    "title": "Melodrama",
+    "year": 2017
+  },
+  {
+    "rank": 490,
+    "slug": "lungs-florence-plus-the-machine",
+    "artist": "Florence + the Machine",
+    "title": "Lungs",
+    "year": 2009
+  },
+  {
+    "rank": 491,
+    "slug": "ceremonials-florence-plus-the-machine",
+    "artist": "Florence + the Machine",
+    "title": "Ceremonials",
+    "year": 2011
+  },
+  {
+    "rank": 492,
+    "slug": "sigh-no-more-mumford-and-sons",
+    "artist": "Mumford & Sons",
+    "title": "Sigh No More",
+    "year": 2009
+  },
+  {
+    "rank": 493,
+    "slug": "babel-mumford-and-sons",
+    "artist": "Mumford & Sons",
+    "title": "Babel",
+    "year": 2012
+  },
+  {
+    "rank": 494,
+    "slug": "my-head-is-an-animal-of-monsters-and-men",
+    "artist": "Of Monsters and Men",
+    "title": "My Head Is an Animal",
+    "year": 2011
+  },
+  {
+    "rank": 495,
+    "slug": "the-lumineers-the-lumineers",
+    "artist": "The Lumineers",
+    "title": "The Lumineers",
+    "year": 2012
+  },
+  {
+    "rank": 496,
+    "slug": "night-visions-imagine-dragons",
+    "artist": "Imagine Dragons",
+    "title": "Night Visions",
+    "year": 2012
+  },
+  {
+    "rank": 497,
+    "slug": "smoke-plus-mirrors-imagine-dragons",
+    "artist": "Imagine Dragons",
+    "title": "Smoke + Mirrors",
+    "year": 2015
+  },
+  {
+    "rank": 498,
+    "slug": "evolve-imagine-dragons",
+    "artist": "Imagine Dragons",
+    "title": "Evolve",
+    "year": 2017
+  },
+  {
+    "rank": 499,
+    "slug": "blurryface-twenty-one-pilots",
+    "artist": "Twenty One Pilots",
+    "title": "Blurryface",
+    "year": 2015
+  },
+  {
+    "rank": 500,
+    "slug": "trench-twenty-one-pilots",
+    "artist": "Twenty One Pilots",
+    "title": "Trench",
+    "year": 2018
+  }
 ]

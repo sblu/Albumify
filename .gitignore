@@ -22,5 +22,8 @@ artifacts/
 .env
 .claude/
 
+# Throwaway helper scripts (plan: not committed)
+scripts/
+
 # OS
 .DS_Store
