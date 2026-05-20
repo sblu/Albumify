@@ -20,6 +20,7 @@ artifacts/
 
 # Local config
 .env
+.claude/
 
 # OS
 .DS_Store
