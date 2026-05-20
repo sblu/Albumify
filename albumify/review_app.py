@@ -321,11 +321,17 @@ INDEX_HTML = r"""<!doctype html>
 <meta charset="utf-8">
 <title>Albumify Label Review</title>
 <style>
+  :root { --zoom: 1; --cover-base: 200px; --current-base: 220px; --prev-base: 110px; }
   body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; margin: 0; padding: 0; background: #fafafa; }
-  header { position: sticky; top: 0; background: #222; color: #fff; padding: 10px 16px; z-index: 10; display: flex; gap: 24px; align-items: center; }
+  header { position: sticky; top: 0; background: #222; color: #fff; padding: 10px 16px; z-index: 10; display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
   header h1 { font-size: 16px; margin: 0; }
   header .stat { font-size: 13px; opacity: 0.9; }
   header .stat b { color: #ffeb3b; }
+  header .zoom { display: flex; align-items: center; gap: 8px; margin-left: auto; font-size: 12px; }
+  header .zoom input[type=range] { width: 160px; }
+  header .zoom .pct { font-variant-numeric: tabular-nums; min-width: 42px; text-align: right; color: #ffeb3b; }
+  header .zoom button { background: #444; color: #fff; border: 1px solid #666; padding: 2px 8px; font-size: 11px; cursor: pointer; border-radius: 3px; }
+  header .zoom button:hover { background: #555; }
   table { width: 100%; border-collapse: collapse; }
   thead th { position: sticky; top: 42px; background: #eee; padding: 8px; text-align: left; font-size: 12px; border-bottom: 1px solid #ccc; }
   tbody tr { border-bottom: 1px solid #e0e0e0; vertical-align: top; }
@@ -335,14 +341,13 @@ INDEX_HTML = r"""<!doctype html>
   tbody tr.processing { background: #d0d0d0; }
   td { padding: 8px; font-size: 13px; }
   td.slug { width: 180px; font-family: ui-monospace, Menlo, monospace; font-size: 11px; word-break: break-all; }
-  td.cover img { width: 200px; height: 200px; object-fit: cover; border: 1px solid #bbb; display: block; }
-  td.iters { width: 260px; }
+  td.cover img { width: calc(var(--cover-base) * var(--zoom)); height: calc(var(--cover-base) * var(--zoom)); object-fit: cover; border: 1px solid #bbb; display: block; }
   td.iters .iter { margin-bottom: 8px; }
   td.iters .iter img { display: block; border: 1px solid #bbb; }
-  td.iters .iter.current img { width: 220px; height: 220px; }
-  td.iters .iter.prev img { width: 110px; height: 110px; opacity: 0.7; }
-  td.iters .prompt { font-size: 10px; color: #555; margin-top: 3px; max-width: 220px; white-space: pre-wrap; }
-  td.iters .iter.prev .prompt { max-width: 110px; }
+  td.iters .iter.current img { width: calc(var(--current-base) * var(--zoom)); height: calc(var(--current-base) * var(--zoom)); }
+  td.iters .iter.prev img { width: calc(var(--prev-base) * var(--zoom)); height: calc(var(--prev-base) * var(--zoom)); opacity: 0.7; }
+  td.iters .prompt { font-size: 10px; color: #555; margin-top: 3px; max-width: calc(var(--current-base) * var(--zoom)); white-space: pre-wrap; }
+  td.iters .iter.prev .prompt { max-width: calc(var(--prev-base) * var(--zoom)); }
   td.iters .comment-shown { font-size: 11px; color: #b00; font-style: italic; margin-top: 2px; }
   td.actions { width: 110px; }
   td.actions label { display: block; cursor: pointer; padding: 4px 0; }
@@ -361,6 +366,12 @@ INDEX_HTML = r"""<!doctype html>
   <span class="stat"><b id="cnt-rejected">0</b> need re-review</span>
   <span class="stat"><b id="cnt-processing">0</b> processing</span>
   <span class="stat">/ <b id="cnt-total">0</b> total</span>
+  <span class="zoom">
+    <button id="zoom-reset" title="Reset to 100%">reset</button>
+    <label for="zoom-range">zoom</label>
+    <input id="zoom-range" type="range" min="0.5" max="3" step="0.1" value="1">
+    <span class="pct" id="zoom-pct">100%</span>
+  </span>
 </header>
 <table>
   <thead>
@@ -533,6 +544,22 @@ async function poll() {
     }
   });
 }
+
+function applyZoom(z) {
+  document.documentElement.style.setProperty('--zoom', z);
+  document.getElementById('zoom-pct').textContent = Math.round(z * 100) + '%';
+  document.getElementById('zoom-range').value = z;
+  localStorage.setItem('albumify-zoom', String(z));
+}
+
+(function initZoom() {
+  const saved = parseFloat(localStorage.getItem('albumify-zoom') || '1');
+  applyZoom(isFinite(saved) ? saved : 1);
+  document.getElementById('zoom-range').addEventListener('input', e => {
+    applyZoom(parseFloat(e.target.value));
+  });
+  document.getElementById('zoom-reset').addEventListener('click', () => applyZoom(1));
+})();
 
 load();
 setInterval(poll, 4000);
