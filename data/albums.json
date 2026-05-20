@@ -1,0 +1,12 @@
+[
+  {"rank": 1, "slug": "thriller-michael-jackson", "artist": "Michael Jackson", "title": "Thriller", "year": 1982},
+  {"rank": 2, "slug": "back-in-black-acdc", "artist": "AC/DC", "title": "Back in Black", "year": 1980},
+  {"rank": 3, "slug": "the-dark-side-of-the-moon-pink-floyd", "artist": "Pink Floyd", "title": "The Dark Side of the Moon", "year": 1973},
+  {"rank": 4, "slug": "the-bodyguard-soundtrack-whitney-houston", "artist": "Whitney Houston", "title": "The Bodyguard", "year": 1992},
+  {"rank": 5, "slug": "their-greatest-hits-eagles", "artist": "Eagles", "title": "Their Greatest Hits (1971-1975)", "year": 1976},
+  {"rank": 6, "slug": "hotel-california-eagles", "artist": "Eagles", "title": "Hotel California", "year": 1976},
+  {"rank": 7, "slug": "come-on-over-shania-twain", "artist": "Shania Twain", "title": "Come On Over", "year": 1997},
+  {"rank": 8, "slug": "rumours-fleetwood-mac", "artist": "Fleetwood Mac", "title": "Rumours", "year": 1977},
+  {"rank": 9, "slug": "saturday-night-fever-soundtrack", "artist": "Various Artists", "title": "Saturday Night Fever", "year": 1977},
+  {"rank": 10, "slug": "led-zeppelin-iv-led-zeppelin", "artist": "Led Zeppelin", "title": "Led Zeppelin IV", "year": 1971}
+]
