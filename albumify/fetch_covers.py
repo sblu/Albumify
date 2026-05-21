@@ -58,12 +58,25 @@ def run(albums_json: Path, covers_dir: Path, report_path: Path, user_agent: str)
 
 
 def main() -> None:
+    import os
     p = argparse.ArgumentParser(description="Download album covers from CAA.")
     p.add_argument("--albums", default="data/albums.json", type=Path)
     p.add_argument("--out", default="data/covers", type=Path)
     p.add_argument("--report", default="data/fetch_report.txt", type=Path)
-    p.add_argument("--user-agent", default="Albumify/0.1 (scottbluman@gmail.com)")
+    p.add_argument(
+        "--user-agent",
+        default=os.environ.get("ALBUMIFY_USER_AGENT", ""),
+        help=("Required. MusicBrainz/CAA mandate a contact in the UA, e.g. "
+              "'Albumify/0.1 (you@example.com)'. Pass via flag or set "
+              "ALBUMIFY_USER_AGENT in your environment."),
+    )
     args = p.parse_args()
+    if not args.user_agent or "@example.com" in args.user_agent:
+        raise SystemExit(
+            "Set --user-agent or ALBUMIFY_USER_AGENT to a real contact email "
+            "(MusicBrainz/CAA policy requires it). Example:\n"
+            "  export ALBUMIFY_USER_AGENT='Albumify/0.1 (you@example.com)'"
+        )
     n = run(args.albums, args.out, args.report, args.user_agent)
     print(f"Downloaded {n} new covers. Report: {args.report}")
 

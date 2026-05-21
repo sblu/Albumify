@@ -145,7 +145,7 @@ Verified live during design:
 - 6/6 sample best-sellers resolved end-to-end. Two real-world quirks observed and handled:
   - CAA returns native res if smaller than the requested size (Hotel California native = 300×298). Anything ≥ 256 is acceptable.
   - CAA occasionally returns transient 500s on the resize endpoint. Retry policy: 3 attempts with 1s/2s/4s backoff, falling back to `/front` (original).
-- Required `User-Agent`: `Albumify/0.1 (scottbluman@gmail.com)`.
+- Required `User-Agent`: a string identifying your client + a contact email, e.g. `Albumify/0.1 (you@example.com)`. MusicBrainz/CAA policy enforces this.
 
 Expected runtime: ~10–15 min for 500 entries (rate-limited).
 
