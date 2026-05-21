@@ -51,6 +51,8 @@ class TrainConfig:
     lora_alpha: float = 8.0
     l1_weight: float = 1.0
     perceptual_weight: float = 0.1
+    edge_weight: float = 0.0          # 0 = plain L1; ~9-15 balances class imbalance
+    edge_threshold: float = 0.5
     use_vgg_pretrained: bool = True
     n_residual_blocks: int = 9
     seed: int = 0
@@ -170,7 +172,9 @@ def train(cfg: TrainConfig) -> dict[str, float]:
     # ---- Loss ----
     vgg = _make_vgg(cfg.use_vgg_pretrained, device) if cfg.perceptual_weight > 0 else None
     loss_fn = L1PerceptualLoss(
-        l1_weight=cfg.l1_weight, perceptual_weight=cfg.perceptual_weight, vgg=vgg,
+        l1_weight=cfg.l1_weight, perceptual_weight=cfg.perceptual_weight,
+        edge_weight=cfg.edge_weight, edge_threshold=cfg.edge_threshold,
+        vgg=vgg,
     ).to(device)
 
     # ---- Optimizer ----
@@ -268,6 +272,10 @@ def main() -> None:
     p.add_argument("--lora-alpha",        type=float, default=8.0)
     p.add_argument("--l1-weight",         type=float, default=1.0)
     p.add_argument("--perceptual-weight", type=float, default=0.1)
+    p.add_argument("--edge-weight",       type=float, default=0.0,
+                   help="Per-pixel multiplier on dark target pixels for class-balanced L1. "
+                        "0 = plain L1. Try 9-15 to push the model to commit dark where dark belongs.")
+    p.add_argument("--edge-threshold",    type=float, default=0.5)
     p.add_argument("--no-vgg-pretrained", action="store_true")
     p.add_argument("--n-residual-blocks", type=int, default=9)
     p.add_argument("--seed",              type=int, default=0)
@@ -279,6 +287,7 @@ def main() -> None:
         lr=args.lr, weight_decay=args.weight_decay, num_workers=args.num_workers,
         lora_rank=args.lora_rank, lora_alpha=args.lora_alpha,
         l1_weight=args.l1_weight, perceptual_weight=args.perceptual_weight,
+        edge_weight=args.edge_weight, edge_threshold=args.edge_threshold,
         use_vgg_pretrained=not args.no_vgg_pretrained,
         n_residual_blocks=args.n_residual_blocks, seed=args.seed,
     )

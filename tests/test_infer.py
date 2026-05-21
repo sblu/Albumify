@@ -40,6 +40,17 @@ def test_postprocess_clips_and_returns_L_mode():
     assert int(arr_back[1, 1]) == 204
 
 
+def test_postprocess_threshold_binarizes():
+    """With --threshold 0.5, anything < 0.5 → 0, anything >= 0.5 → 255."""
+    arr = np.array([[[[0.3, 0.5], [0.49, 0.8]]]], dtype=np.float32)
+    img = postprocess(arr, threshold=0.5)
+    a = np.asarray(img)
+    assert int(a[0, 0]) == 0       # 0.3 < 0.5 → black
+    assert int(a[0, 1]) == 255     # 0.5 not < 0.5 → white
+    assert int(a[1, 0]) == 0       # 0.49 < 0.5 → black
+    assert int(a[1, 1]) == 255     # 0.8 not < 0.5 → white
+
+
 def test_full_inference_via_tiny_onnx_model(tmp_path: Path):
     """Build a 1-conv identity-ish ONNX manually and verify the CLI flow runs."""
     torch = pytest.importorskip("torch")

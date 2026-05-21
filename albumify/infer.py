@@ -36,9 +36,20 @@ def preprocess(img_path: Path | str, size: int = 256) -> np.ndarray:
     return arr
 
 
-def postprocess(out_arr: np.ndarray) -> Image.Image:
-    """1x1xHxW float in [0,1] -> L-mode PIL Image."""
-    a = np.clip(out_arr[0, 0] * 255.0 + 0.5, 0, 255).astype(np.uint8)
+def postprocess(out_arr: np.ndarray, threshold: float | None = None) -> Image.Image:
+    """1x1xHxW float in [0,1] -> L-mode PIL Image.
+
+    If `threshold` is set (a value in [0,1]), the output is binarized:
+    pixels < threshold become 0 (pure black), others become 255 (pure white).
+    Useful when the model produces faint "ghost" line drawings that need
+    contrast boosted at inference time.
+    """
+    if threshold is not None:
+        cutoff = float(threshold)
+        mask = out_arr[0, 0] < cutoff
+        a = np.where(mask, 0, 255).astype(np.uint8)
+    else:
+        a = np.clip(out_arr[0, 0] * 255.0 + 0.5, 0, 255).astype(np.uint8)
     return Image.fromarray(a, mode="L")
 
 
@@ -60,13 +71,14 @@ def infer_one(
     in_path: Path | str,
     out_path: Path | str,
     size: int = 256,
+    threshold: float | None = None,
 ) -> Tuple[float, Path]:
     """Run inference on one file, save PNG, return (latency_s, out_path)."""
     x = preprocess(in_path, size=size)
     t0 = time.time()
     y = session.run([session.get_outputs()[0].name], {session.get_inputs()[0].name: x})[0]
     dt = time.time() - t0
-    img = postprocess(y)
+    img = postprocess(y, threshold=threshold)
     out_path = Path(out_path)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     img.save(out_path)
@@ -82,10 +94,15 @@ def main() -> None:
     p.add_argument("--size", type=int, default=256)
     p.add_argument("--threads", type=int, default=0,
                    help="onnxruntime intra-op threads (0 = library default).")
+    p.add_argument("--threshold", type=float, default=None,
+                   help="If set (0..1), binarize the output: pixels darker than "
+                        "this become pure black, lighter pixels pure white. "
+                        "Useful when the model produces faint ghost lines.")
     args = p.parse_args()
     session = _build_session(args.model, args.threads)
     dt, out = infer_one(
-        session=session, in_path=args.in_path, out_path=args.out_path, size=args.size,
+        session=session, in_path=args.in_path, out_path=args.out_path,
+        size=args.size, threshold=args.threshold,
     )
     print(f"wrote {out} in {dt * 1000:.1f} ms (size={args.size}, model={args.model.name})")
 

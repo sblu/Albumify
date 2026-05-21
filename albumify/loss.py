@@ -66,25 +66,60 @@ class VGGPerceptualLoss(nn.Module):
         return loss / len(f_p)
 
 
+def edge_weighted_l1(
+    pred: torch.Tensor,
+    target: torch.Tensor,
+    *,
+    edge_threshold: float = 0.5,
+    edge_weight: float = 0.0,
+) -> torch.Tensor:
+    """Per-pixel L1, with dark target pixels weighted (1 + edge_weight)x.
+
+    Line-drawing labels are ~95% white background / ~5% dark edges, so plain
+    L1 lets the model converge to "predict white everywhere" — gradient toward
+    white dominates 19:1. Lifting edge_weight to 9 brings the effective
+    contribution of edge pixels up by 10x, giving roughly balanced gradients
+    and pushing the model to commit dark where dark belongs.
+
+    Edge_weight=0 is identical to plain L1.
+    """
+    abs_err = (pred - target).abs()
+    if edge_weight == 0:
+        return abs_err.mean()
+    # Mark target pixels that are "edge" (dark) and dilate 1px so the model
+    # also gets credit on near-edge pixels.
+    edges = (target < edge_threshold).float()
+    edges = F.max_pool2d(edges, kernel_size=3, stride=1, padding=1)
+    weights = 1.0 + edge_weight * edges
+    return (abs_err * weights).mean()
+
+
 class L1PerceptualLoss(nn.Module):
-    """Combined L1 + optional VGG perceptual loss."""
+    """Combined L1 + optional VGG perceptual loss with optional edge weighting."""
 
     def __init__(
         self,
         *,
         l1_weight: float = 1.0,
         perceptual_weight: float = 0.1,
-        vgg: Optional[VGGPerceptualLoss] = None,
+        edge_weight: float = 0.0,
+        edge_threshold: float = 0.5,
+        vgg: Optional["VGGPerceptualLoss"] = None,
     ):
         super().__init__()
         self.l1_weight = l1_weight
         self.perceptual_weight = perceptual_weight
+        self.edge_weight = edge_weight
+        self.edge_threshold = edge_threshold
         self.vgg = vgg
         if perceptual_weight > 0 and vgg is None:
             raise ValueError("perceptual_weight > 0 requires a VGGPerceptualLoss instance")
 
     def forward(self, pred: torch.Tensor, target: torch.Tensor) -> dict[str, torch.Tensor]:
-        l1 = F.l1_loss(pred, target)
+        l1 = edge_weighted_l1(
+            pred, target,
+            edge_threshold=self.edge_threshold, edge_weight=self.edge_weight,
+        )
         total = self.l1_weight * l1
         result: dict[str, torch.Tensor] = {"l1": l1.detach()}
         if self.perceptual_weight > 0 and self.vgg is not None:
