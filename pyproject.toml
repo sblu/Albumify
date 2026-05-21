@@ -25,6 +25,7 @@ train = [
     "torch>=2.3",
     "torchvision>=0.18",
     "onnx>=1.16",
+    "onnxscript>=0.1",   # torch>=2.5's ONNX exporter imports this at runtime
     "lpips>=0.1.4",
     "scikit-image>=0.22",
     "tensorboard>=2.16",
