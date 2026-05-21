@@ -129,15 +129,20 @@ def train(cfg: TrainConfig) -> dict[str, float]:
     metrics_jsonl = open(out_dir / "metrics.jsonl", "a", buffering=1)
 
     # ---- Model + LoRA ----
-    model = Generator(n_residual_blocks=cfg.n_residual_blocks).to(device)
+    # Build on CPU so the pretrained checkpoint (saved on CPU) loads without
+    # device-conversion surprises, wrap with LoRA (creates new CPU conv layers),
+    # then move the whole thing to `device` in one shot so every parameter
+    # ends up on the same device.
+    model = Generator(n_residual_blocks=cfg.n_residual_blocks)
     if cfg.pretrained_ckpt:
-        missing, unexpected = load_pretrained(model, cfg.pretrained_ckpt, map_location=str(device))
+        missing, unexpected = load_pretrained(model, cfg.pretrained_ckpt, map_location="cpu")
         print(f"[pretrained] missing={len(missing)} unexpected={len(unexpected)}")
     n_wrapped = wrap_conv2d_layers(
         model, rank=cfg.lora_rank, alpha=cfg.lora_alpha,
         skip_kernel_sizes=tuple(cfg.skip_kernel_sizes_for_lora),
     )
     freeze_non_lora(model)
+    model = model.to(device)
     n_lora = count_lora_params(model)
     n_total = sum(p.numel() for p in model.parameters())
     print(f"[lora] wrapped={n_wrapped} lora_params={n_lora:,} / total={n_total:,}")

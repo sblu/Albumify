@@ -20,15 +20,19 @@ from albumify.transforms import PairedTransformConfig, paired_transform
 
 
 def _pil_rgb_to_tensor(img: Image.Image) -> torch.Tensor:
-    """Convert RGB PIL → CHW float tensor in [0, 1]."""
-    arr = np.asarray(img, dtype=np.uint8)  # HxWx3
+    """Convert RGB PIL → CHW float tensor in [0, 1].
+
+    Uses np.array (copy) rather than np.asarray (view) because PIL's buffer
+    is non-writable and torch.from_numpy emits a warning otherwise.
+    """
+    arr = np.array(img, dtype=np.uint8)  # HxWx3
     t = torch.from_numpy(arr).permute(2, 0, 1).float() / 255.0
     return t
 
 
 def _pil_gray_to_tensor(img: Image.Image) -> torch.Tensor:
     """Convert L-mode PIL → 1xHxW float tensor in [0, 1]."""
-    arr = np.asarray(img, dtype=np.uint8)  # HxW
+    arr = np.array(img, dtype=np.uint8)  # HxW
     t = torch.from_numpy(arr).float().unsqueeze(0) / 255.0
     return t
 

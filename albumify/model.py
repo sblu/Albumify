@@ -33,6 +33,11 @@ class ResidualBlock(nn.Module):
 
 
 class Generator(nn.Module):
+    """ResNet-style generator, vendored to match the official informative-drawings
+    state_dict layout exactly: five Sequential children named model0..model4
+    so a checkpoint produced by the upstream repo loads strict=True.
+    """
+
     def __init__(
         self,
         input_nc: int = 3,
@@ -42,49 +47,55 @@ class Generator(nn.Module):
         sigmoid: bool = True,
     ):
         super().__init__()
-        layers: list[nn.Module] = [
+        # ---- model0: initial 7x7 reflect-pad conv ----
+        self.model0 = nn.Sequential(
             nn.ReflectionPad2d(3),
             nn.Conv2d(input_nc, ngf, 7),
             nn.InstanceNorm2d(ngf),
             nn.ReLU(inplace=True),
-        ]
-        # Downsampling x2
-        in_ch = ngf
-        out_ch = ngf * 2
-        for _ in range(2):
-            layers += [
-                nn.Conv2d(in_ch, out_ch, 3, stride=2, padding=1),
-                nn.InstanceNorm2d(out_ch),
-                nn.ReLU(inplace=True),
-            ]
-            in_ch = out_ch
-            out_ch = in_ch * 2
-        # Residual blocks
-        for _ in range(n_residual_blocks):
-            layers.append(ResidualBlock(in_ch))
-        # Upsampling x2
-        out_ch = in_ch // 2
-        for _ in range(2):
-            layers += [
-                nn.ConvTranspose2d(
-                    in_ch, out_ch, 3, stride=2, padding=1, output_padding=1,
-                ),
-                nn.InstanceNorm2d(out_ch),
-                nn.ReLU(inplace=True),
-            ]
-            in_ch = out_ch
-            out_ch = in_ch // 2
-        # Final 1-channel conv + sigmoid
-        layers += [
+        )
+
+        # ---- model1: 2x downsampling ----
+        self.model1 = nn.Sequential(
+            nn.Conv2d(ngf, ngf * 2, 3, stride=2, padding=1),
+            nn.InstanceNorm2d(ngf * 2),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(ngf * 2, ngf * 4, 3, stride=2, padding=1),
+            nn.InstanceNorm2d(ngf * 4),
+            nn.ReLU(inplace=True),
+        )
+
+        # ---- model2: N residual blocks at ngf*4 channels ----
+        self.model2 = nn.Sequential(
+            *[ResidualBlock(ngf * 4) for _ in range(n_residual_blocks)]
+        )
+
+        # ---- model3: 2x upsampling ----
+        self.model3 = nn.Sequential(
+            nn.ConvTranspose2d(ngf * 4, ngf * 2, 3, stride=2, padding=1, output_padding=1),
+            nn.InstanceNorm2d(ngf * 2),
+            nn.ReLU(inplace=True),
+            nn.ConvTranspose2d(ngf * 2, ngf, 3, stride=2, padding=1, output_padding=1),
+            nn.InstanceNorm2d(ngf),
+            nn.ReLU(inplace=True),
+        )
+
+        # ---- model4: final 7x7 reflect-pad conv (+ optional sigmoid) ----
+        tail: list[nn.Module] = [
             nn.ReflectionPad2d(3),
-            nn.Conv2d(in_ch, output_nc, 7),
+            nn.Conv2d(ngf, output_nc, 7),
         ]
         if sigmoid:
-            layers.append(nn.Sigmoid())
-        self.model = nn.Sequential(*layers)
+            tail.append(nn.Sigmoid())
+        self.model4 = nn.Sequential(*tail)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return self.model(x)
+        x = self.model0(x)
+        x = self.model1(x)
+        x = self.model2(x)
+        x = self.model3(x)
+        x = self.model4(x)
+        return x
 
 
 def load_pretrained(
