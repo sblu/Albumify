@@ -10,7 +10,7 @@
 #   GPU_TYPE      — default: nvidia-tesla-t4
 #   GPU_COUNT     — default: 1
 #   DISK_GB       — default: 100
-#   IMAGE_FAMILY  — default: pytorch-latest-gpu (Deep Learning VM)
+#   IMAGE_FAMILY  — default: pytorch-2-9-cu129-ubuntu-2204-nvidia-580 (DLVM)
 #   IMAGE_PROJECT — default: deeplearning-platform-release
 #
 # Behavior:
@@ -31,7 +31,7 @@ MACHINE_TYPE="${MACHINE_TYPE:-n1-standard-4}"
 GPU_TYPE="${GPU_TYPE:-nvidia-tesla-t4}"
 GPU_COUNT="${GPU_COUNT:-1}"
 DISK_GB="${DISK_GB:-100}"
-IMAGE_FAMILY="${IMAGE_FAMILY:-pytorch-latest-gpu}"
+IMAGE_FAMILY="${IMAGE_FAMILY:-pytorch-2-9-cu129-ubuntu-2204-nvidia-580}"
 IMAGE_PROJECT="${IMAGE_PROJECT:-deeplearning-platform-release}"
 
 echo ">>> Creating $VM_NAME in $ZONE on project $PROJECT (spot, auto-delete on preempt)"
