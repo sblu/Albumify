@@ -109,6 +109,15 @@ def _evaluate(
     }
 
 
+def _try_tb_writer(log_dir: Path):
+    """Create a TensorBoard SummaryWriter if torch.utils.tensorboard is installed."""
+    try:
+        from torch.utils.tensorboard import SummaryWriter
+    except ImportError:
+        return None
+    return SummaryWriter(log_dir=str(log_dir))
+
+
 def train(cfg: TrainConfig) -> dict[str, float]:
     out_dir = Path(cfg.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -116,6 +125,8 @@ def train(cfg: TrainConfig) -> dict[str, float]:
     _seed_all(cfg.seed)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    tb = _try_tb_writer(out_dir / "tb")
+    metrics_jsonl = open(out_dir / "metrics.jsonl", "a", buffering=1)
 
     # ---- Model + LoRA ----
     model = Generator(n_residual_blocks=cfg.n_residual_blocks).to(device)
@@ -182,6 +193,11 @@ def train(cfg: TrainConfig) -> dict[str, float]:
             running_total += float(res["total"])
             n_batches += 1
             global_step += 1
+            if tb is not None:
+                tb.add_scalar("loss/train_step_total", float(res["total"]), global_step)
+                tb.add_scalar("loss/train_step_l1", float(res["l1"]), global_step)
+                if "perc" in res:
+                    tb.add_scalar("loss/train_step_perc", float(res["perc"]), global_step)
             if global_step % cfg.log_every == 0:
                 avg = running_total / max(1, n_batches)
                 print(f"epoch={epoch} step={global_step} loss={avg:.4f}")
@@ -198,6 +214,15 @@ def train(cfg: TrainConfig) -> dict[str, float]:
             "epoch_s": time.time() - t_epoch,
         }
         print("[epoch]", json.dumps(last_log, default=lambda x: round(x, 4) if isinstance(x, float) else x))
+        metrics_jsonl.write(json.dumps(last_log) + "\n")
+        if tb is not None:
+            tb.add_scalar("loss/train_epoch_total", avg_train, epoch + 1)
+            if not math.isnan(metrics.get("val_total", float("nan"))):
+                tb.add_scalar("loss/val_total", metrics["val_total"], epoch + 1)
+                tb.add_scalar("loss/val_l1", metrics["val_l1"], epoch + 1)
+                if metrics.get("val_perc", 0) > 0:
+                    tb.add_scalar("loss/val_perc", metrics["val_perc"], epoch + 1)
+            tb.flush()
 
         # Save state on best val
         val_total = metrics.get("val_total", float("nan"))
@@ -215,6 +240,9 @@ def train(cfg: TrainConfig) -> dict[str, float]:
 
     summary = {"best_val_total": float(best_val), **last_log}
     (out_dir / "summary.json").write_text(json.dumps(summary, indent=2, default=str))
+    metrics_jsonl.close()
+    if tb is not None:
+        tb.close()
     return summary
 
 
