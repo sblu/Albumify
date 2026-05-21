@@ -191,15 +191,23 @@ gcloud compute instances delete albumify-train --zone <ZONE> --project albumarti
 - Pi IP on LAN: `192.168.86.84` (user `scott`).
 - Best threshold for the current rank-8 model on the Pi: `0.95`.
 - **Two Pi 5 devices in play:**
-  - Testing Pi (16 GB RAM, ours): plenty of memory, but compute-bound.
-    1024×1024 measured 141 sec with default thread count — likely
-    capped by ORT defaulting to 1-2 intra-op threads + per-channel
-    INT8 not being especially fast on ARM aarch64. Try `--threads 4`.
-  - Deployment Pi (1 GB RAM, friend's): memory IS the constraint at
-    1024 (working set ~600 MB → swap-thrashing). **Target deployment
-    size: 512 max.** Higher might OOM.
-- Default thread count in `albumify` CLI is 0 (= ORT library default,
-  which is conservative on ARM). Always pass `--threads 4` on Pi 5.
+  - Testing Pi (16 GB RAM, ours): not memory bound. Measured 141 sec
+    at 1024×1024 default threads, 130 sec at --threads 4 (only 8%
+    faster, so threading isn't the bottleneck). Likely fundamental
+    architectural cost: InstanceNorm + ReflectionPad + ConvTranspose
+    are FP32 in our exported ONNX (only Conv2d weights are INT8), and
+    they scale linearly with pixels. Need a benchmark at 256 to verify
+    linear scaling theory — if it's ~8 sec at 256, the architecture
+    just is what it is.
+  - Deployment Pi (1 GB RAM, friend's): memory ALSO constraint at 1024
+    (working set ~600 MB → swap). **Target deployment size: ≤ 512.**
+- Default thread count in `albumify` CLI is 0 (= ORT library default).
+  Use `--threads 4` on Pi 5 — minor help but free.
+- Potential model-side perf work for a future session (not blocking):
+  - Replace InstanceNorm with BatchNorm (fuses with Conv at inference).
+  - Replace ReflectionPad with ZeroPad (free, baked into Conv).
+  - Fewer residual blocks (9 → 6) — trades quality for ~30% speed.
+  - Static (calibration-based) INT8 instead of dynamic.
 - Edge fraction in our labels: ~5%. With edge_weight=N, "predict white
   everywhere" gives val_l1 ≈ 0.05*N — sanity check when reading numbers.
 - VGG16 perceptual weights (~530 MB) download once per fresh VM; expect
