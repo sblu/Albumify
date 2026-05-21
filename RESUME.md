@@ -190,6 +190,10 @@ gcloud compute instances delete albumify-train --zone <ZONE> --project albumarti
 - Project: `albumartifier`. Active config: `albumify`.
 - Pi IP on LAN: `192.168.86.84` (user `scott`).
 - Best threshold for the current rank-8 model on the Pi: `0.95`.
+- **Pi 5 (1 GB) inference budget:** stick to `--size 512` max. At 1024,
+  intermediate feature maps total ~600 MB working set → swap → 141 sec
+  per image (measured). 256 is ~300 ms, 512 is ~1.5 s. For 1024
+  you'd want a 4 GB Pi.
 - Edge fraction in our labels: ~5%. With edge_weight=N, "predict white
   everywhere" gives val_l1 ≈ 0.05*N — sanity check when reading numbers.
 - VGG16 perceptual weights (~530 MB) download once per fresh VM; expect
