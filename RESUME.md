@@ -191,16 +191,14 @@ gcloud compute instances delete albumify-train --zone <ZONE> --project albumarti
 - Pi IP on LAN: `192.168.86.84` (user `scott`).
 - Best threshold for the current rank-8 model on the Pi: `0.95`.
 - **Two Pi 5 devices in play:**
-  - Testing Pi (16 GB RAM, ours): not memory bound. Measured 141 sec
-    at 1024×1024 default threads, 130 sec at --threads 4 (only 8%
-    faster, so threading isn't the bottleneck). Likely fundamental
-    architectural cost: InstanceNorm + ReflectionPad + ConvTranspose
-    are FP32 in our exported ONNX (only Conv2d weights are INT8), and
-    they scale linearly with pixels. Need a benchmark at 256 to verify
-    linear scaling theory — if it's ~8 sec at 256, the architecture
-    just is what it is.
-  - Deployment Pi (1 GB RAM, friend's): memory ALSO constraint at 1024
-    (working set ~600 MB → swap). **Target deployment size: ≤ 512.**
+  - Testing Pi (16 GB RAM, ours): not memory-bound by total RAM, but
+    cache-bound at large sizes. Measured wall times:
+    - `--size 256`: 2.65 s ← fast enough for real use
+    - `--size 1024 --threads 4`: 130 s (49× slower for 16× pixels)
+      — superlinear because intermediate feature maps stop fitting in
+      the Pi's 2 MB L3 and every access goes to DRAM.
+  - Deployment Pi (1 GB RAM, friend's): same cache issue, plus actual
+    RAM pressure beyond 512. **Target deployment size: 256.**
 - Default thread count in `albumify` CLI is 0 (= ORT library default).
   Use `--threads 4` on Pi 5 — minor help but free.
 - Potential model-side perf work for a future session (not blocking):
