@@ -133,14 +133,19 @@ def run_eval(cfg: EvalConfig) -> dict[str, float]:
     out_dir.mkdir(parents=True, exist_ok=True)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    model = Generator(n_residual_blocks=cfg.n_residual_blocks).to(device)
+    # Build on CPU, wrap LoRA (creates new CPU convs), load state, then move
+    # once to `device` so every parameter ends up co-located. Same ordering
+    # as albumify/train.py — moving to device before wrap leaves the new
+    # lora_A/lora_B convs on CPU and the first forward crashes.
+    model = Generator(n_residual_blocks=cfg.n_residual_blocks)
     wrap_conv2d_layers(
         model, rank=cfg.lora_rank, alpha=cfg.lora_alpha,
         skip_kernel_sizes=tuple(cfg.skip_kernel_sizes_for_lora),
     )
     freeze_non_lora(model)
-    ckpt = torch.load(cfg.ckpt_path, map_location=str(device))
+    ckpt = torch.load(cfg.ckpt_path, map_location="cpu")
     model.load_state_dict(ckpt["model_state_dict"])
+    model = model.to(device)
     model.eval()
 
     tf_cfg = PairedTransformConfig(out_size=cfg.img_size, resize_short_to=cfg.img_size)
