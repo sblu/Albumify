@@ -65,7 +65,16 @@ def paired_transform(
 ) -> tuple[Image.Image, Image.Image]:
     """Apply synchronized geometric augs + cover-only photometric jitter.
 
-    When `train=False`, applies a deterministic center-crop with no jitter.
+    Cover and label are forced to identical (square) dimensions up front:
+    a direct PIL resize to `resize_short_to` x `resize_short_to`. Real-world
+    covers from CAA aren't always square (e.g. Hotel California is 300x298)
+    and the Gemini labels are always 1024x1024, so aspect-preserving resize
+    would yield different shapes per side and break paired cropping. The
+    cover absorbs a small aspect distortion; the label (already square) is
+    not affected.
+
+    When `train=False`, applies a deterministic resize to (out_size, out_size)
+    with no jitter.
     """
     cfg = cfg or PairedTransformConfig()
     rng = rng or random.Random()
@@ -74,14 +83,14 @@ def paired_transform(
     label_l = label.convert("L")  # line drawings are grayscale; collapse to 1 channel
 
     if train:
-        cover_r = _resize_short_side(cover_rgb, cfg.resize_short_to)
-        label_r = _resize_short_side_nearest(label_l, cfg.resize_short_to)
-        w, h = cover_r.size
-        assert label_r.size == cover_r.size, "paired resize size mismatch"
-        max_x = max(0, w - cfg.out_size)
-        max_y = max(0, h - cfg.out_size)
-        x = rng.randint(0, max_x)
-        y = rng.randint(0, max_y)
+        # Direct square resize so cover + label always agree on dimensions.
+        side = cfg.resize_short_to
+        cover_r = cover_rgb.resize((side, side), Image.BICUBIC)
+        label_r = label_l.resize((side, side), Image.NEAREST)
+
+        max_xy = max(0, side - cfg.out_size)
+        x = rng.randint(0, max_xy)
+        y = rng.randint(0, max_xy)
         box = (x, y, x + cfg.out_size, y + cfg.out_size)
         cover_c = cover_r.crop(box)
         label_c = label_r.crop(box)
@@ -100,11 +109,8 @@ def paired_transform(
 
         return cover_c, label_c
 
-    # Eval: deterministic center-square crop at out_size.
-    cover_r = _resize_short_side(cover_rgb, cfg.out_size)
-    label_r = _resize_short_side_nearest(label_l, cfg.out_size)
-    w, h = cover_r.size
-    x = (w - cfg.out_size) // 2
-    y = (h - cfg.out_size) // 2
-    box = (x, y, x + cfg.out_size, y + cfg.out_size)
-    return cover_r.crop(box), label_r.crop(box)
+    # Eval: deterministic square resize at out_size.
+    return (
+        cover_rgb.resize((cfg.out_size, cfg.out_size), Image.BICUBIC),
+        label_l.resize((cfg.out_size, cfg.out_size), Image.NEAREST),
+    )

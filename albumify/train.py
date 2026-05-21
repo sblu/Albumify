@@ -195,7 +195,7 @@ def train(cfg: TrainConfig) -> dict[str, float]:
             opt.zero_grad(set_to_none=True)
             res["total"].backward()
             opt.step()
-            running_total += float(res["total"])
+            running_total += float(res["total"].detach())
             n_batches += 1
             global_step += 1
             if tb is not None:
