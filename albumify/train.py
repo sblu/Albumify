@@ -55,6 +55,8 @@ class TrainConfig:
     edge_threshold: float = 0.5
     use_vgg_pretrained: bool = True
     n_residual_blocks: int = 9
+    ngf: int = 64                     # base width; bump to 96 for ~2.25x params
+    use_lora: bool = True             # set False for full fine-tune from scratch
     seed: int = 0
     log_every: int = 20
     eval_every: int = 1  # epochs
@@ -130,24 +132,30 @@ def train(cfg: TrainConfig) -> dict[str, float]:
     tb = _try_tb_writer(out_dir / "tb")
     metrics_jsonl = open(out_dir / "metrics.jsonl", "a", buffering=1)
 
-    # ---- Model + LoRA ----
-    # Build on CPU so the pretrained checkpoint (saved on CPU) loads without
-    # device-conversion surprises, wrap with LoRA (creates new CPU conv layers),
-    # then move the whole thing to `device` in one shot so every parameter
-    # ends up on the same device.
-    model = Generator(n_residual_blocks=cfg.n_residual_blocks)
+    # ---- Model (+ optional LoRA) ----
+    # Build on CPU so the pretrained checkpoint (also saved on CPU) loads
+    # without device-conversion surprises, optionally wrap with LoRA (creates
+    # new CPU conv layers), then move the whole thing to `device` once so
+    # every parameter ends up co-located.
+    model = Generator(n_residual_blocks=cfg.n_residual_blocks, ngf=cfg.ngf)
     if cfg.pretrained_ckpt:
         missing, unexpected = load_pretrained(model, cfg.pretrained_ckpt, map_location="cpu")
         print(f"[pretrained] missing={len(missing)} unexpected={len(unexpected)}")
-    n_wrapped = wrap_conv2d_layers(
-        model, rank=cfg.lora_rank, alpha=cfg.lora_alpha,
-        skip_kernel_sizes=tuple(cfg.skip_kernel_sizes_for_lora),
-    )
-    freeze_non_lora(model)
+    if cfg.use_lora:
+        n_wrapped = wrap_conv2d_layers(
+            model, rank=cfg.lora_rank, alpha=cfg.lora_alpha,
+            skip_kernel_sizes=tuple(cfg.skip_kernel_sizes_for_lora),
+        )
+        freeze_non_lora(model)
+    else:
+        n_wrapped = 0
     model = model.to(device)
-    n_lora = count_lora_params(model)
+    n_trainable = sum(p.numel() for p in model.parameters() if p.requires_grad)
     n_total = sum(p.numel() for p in model.parameters())
-    print(f"[lora] wrapped={n_wrapped} lora_params={n_lora:,} / total={n_total:,}")
+    if cfg.use_lora:
+        print(f"[lora] wrapped={n_wrapped} lora_params={n_trainable:,} / total={n_total:,}")
+    else:
+        print(f"[full-finetune] ngf={cfg.ngf} trainable={n_trainable:,} (== total)")
 
     # ---- Data ----
     tf_cfg = PairedTransformConfig(out_size=cfg.img_size, resize_short_to=cfg.resize_short_to)
@@ -178,9 +186,11 @@ def train(cfg: TrainConfig) -> dict[str, float]:
     ).to(device)
 
     # ---- Optimizer ----
-    opt = torch.optim.AdamW(
-        list(lora_parameters(model)), lr=cfg.lr, weight_decay=cfg.weight_decay,
-    )
+    if cfg.use_lora:
+        opt_params = list(lora_parameters(model))
+    else:
+        opt_params = [p for p in model.parameters() if p.requires_grad]
+    opt = torch.optim.AdamW(opt_params, lr=cfg.lr, weight_decay=cfg.weight_decay)
 
     # ---- Training loop ----
     best_val = math.inf
@@ -203,7 +213,7 @@ def train(cfg: TrainConfig) -> dict[str, float]:
             n_batches += 1
             global_step += 1
             if tb is not None:
-                tb.add_scalar("loss/train_step_total", float(res["total"]), global_step)
+                tb.add_scalar("loss/train_step_total", float(res["total"].detach()), global_step)
                 tb.add_scalar("loss/train_step_l1", float(res["l1"]), global_step)
                 if "perc" in res:
                     tb.add_scalar("loss/train_step_perc", float(res["perc"]), global_step)
@@ -278,6 +288,10 @@ def main() -> None:
     p.add_argument("--edge-threshold",    type=float, default=0.5)
     p.add_argument("--no-vgg-pretrained", action="store_true")
     p.add_argument("--n-residual-blocks", type=int, default=9)
+    p.add_argument("--ngf",               type=int, default=64,
+                   help="Generator base channel count. 64 = 11.7M params, 96 = 25.5M, 128 = 45M.")
+    p.add_argument("--no-lora",           action="store_true",
+                   help="Skip LoRA wrap + freeze; train every parameter (full fine-tune).")
     p.add_argument("--seed",              type=int, default=0)
     args = p.parse_args()
     cfg = TrainConfig(
@@ -289,7 +303,9 @@ def main() -> None:
         l1_weight=args.l1_weight, perceptual_weight=args.perceptual_weight,
         edge_weight=args.edge_weight, edge_threshold=args.edge_threshold,
         use_vgg_pretrained=not args.no_vgg_pretrained,
-        n_residual_blocks=args.n_residual_blocks, seed=args.seed,
+        n_residual_blocks=args.n_residual_blocks,
+        ngf=args.ngf, use_lora=not args.no_lora,
+        seed=args.seed,
     )
     train(cfg)
 

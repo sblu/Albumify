@@ -24,13 +24,15 @@ def export_onnx(
     ckpt_path: Path | str,
     out_fp32_path: Path | str,
     n_residual_blocks: int = 9,
+    ngf: int = 64,
+    use_lora: bool = True,
     lora_rank: int = 8,
     lora_alpha: float = 8.0,
     skip_kernel_sizes_for_lora: tuple = (),
     example_size: int = 256,
     opset: int = 17,
 ) -> dict[str, str]:
-    """Merge LoRA + export to FP32 ONNX. Returns a small report dict."""
+    """(Optionally) Merge LoRA + export to FP32 ONNX. Returns a small report dict."""
     import torch
     from albumify.lora import freeze_non_lora, merge_all_lora, wrap_conv2d_layers
     from albumify.model import Generator
@@ -38,16 +40,19 @@ def export_onnx(
     out_fp32_path = Path(out_fp32_path)
     out_fp32_path.parent.mkdir(parents=True, exist_ok=True)
 
-    model = Generator(n_residual_blocks=n_residual_blocks)
-    wrap_conv2d_layers(
-        model, rank=lora_rank, alpha=lora_alpha,
-        skip_kernel_sizes=tuple(skip_kernel_sizes_for_lora),
-    )
-    freeze_non_lora(model)
+    model = Generator(n_residual_blocks=n_residual_blocks, ngf=ngf)
+    n_merged = 0
+    if use_lora:
+        wrap_conv2d_layers(
+            model, rank=lora_rank, alpha=lora_alpha,
+            skip_kernel_sizes=tuple(skip_kernel_sizes_for_lora),
+        )
+        freeze_non_lora(model)
     ckpt = torch.load(str(ckpt_path), map_location="cpu")
     state = ckpt.get("model_state_dict", ckpt)
     model.load_state_dict(state, strict=False)
-    n_merged = merge_all_lora(model)
+    if use_lora:
+        n_merged = merge_all_lora(model)
     model.eval()
 
     dummy = torch.randn(1, 3, example_size, example_size)
@@ -129,6 +134,8 @@ def main() -> None:
     p.add_argument("--ckpt-path", required=True)
     p.add_argument("--out-dir",   default="artifacts")
     p.add_argument("--n-residual-blocks", type=int, default=9)
+    p.add_argument("--ngf", type=int, default=64)
+    p.add_argument("--no-lora", action="store_true")
     p.add_argument("--lora-rank", type=int, default=8)
     p.add_argument("--lora-alpha", type=float, default=8.0)
     p.add_argument("--example-size", type=int, default=256)
@@ -141,6 +148,7 @@ def main() -> None:
     report = export_onnx(
         ckpt_path=args.ckpt_path, out_fp32_path=fp32,
         n_residual_blocks=args.n_residual_blocks,
+        ngf=args.ngf, use_lora=not args.no_lora,
         lora_rank=args.lora_rank, lora_alpha=args.lora_alpha,
         example_size=args.example_size, opset=args.opset,
     )

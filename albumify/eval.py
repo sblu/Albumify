@@ -111,6 +111,8 @@ class EvalConfig:
     out_dir: str = "runs/lora-default/eval"
     img_size: int = 256
     n_residual_blocks: int = 9
+    ngf: int = 64
+    use_lora: bool = True
     lora_rank: int = 8
     lora_alpha: float = 8.0
     skip_kernel_sizes_for_lora: tuple = ()
@@ -137,12 +139,13 @@ def run_eval(cfg: EvalConfig) -> dict[str, float]:
     # once to `device` so every parameter ends up co-located. Same ordering
     # as albumify/train.py — moving to device before wrap leaves the new
     # lora_A/lora_B convs on CPU and the first forward crashes.
-    model = Generator(n_residual_blocks=cfg.n_residual_blocks)
-    wrap_conv2d_layers(
-        model, rank=cfg.lora_rank, alpha=cfg.lora_alpha,
-        skip_kernel_sizes=tuple(cfg.skip_kernel_sizes_for_lora),
-    )
-    freeze_non_lora(model)
+    model = Generator(n_residual_blocks=cfg.n_residual_blocks, ngf=cfg.ngf)
+    if cfg.use_lora:
+        wrap_conv2d_layers(
+            model, rank=cfg.lora_rank, alpha=cfg.lora_alpha,
+            skip_kernel_sizes=tuple(cfg.skip_kernel_sizes_for_lora),
+        )
+        freeze_non_lora(model)
     ckpt = torch.load(cfg.ckpt_path, map_location="cpu")
     model.load_state_dict(ckpt["model_state_dict"])
     model = model.to(device)
@@ -212,6 +215,8 @@ def main() -> None:
     p.add_argument("--out-dir",   default="runs/lora-default/eval")
     p.add_argument("--img-size",  type=int, default=256)
     p.add_argument("--n-residual-blocks", type=int, default=9)
+    p.add_argument("--ngf", type=int, default=64)
+    p.add_argument("--no-lora", action="store_true")
     p.add_argument("--lora-rank", type=int, default=8)
     p.add_argument("--lora-alpha", type=float, default=8.0)
     p.add_argument("--use-lpips", action="store_true")
@@ -220,8 +225,10 @@ def main() -> None:
     cfg = EvalConfig(
         splits_dir=args.splits_dir, covers_dir=args.covers_dir, labels_dir=args.labels_dir,
         ckpt_path=args.ckpt_path, out_dir=args.out_dir, img_size=args.img_size,
-        n_residual_blocks=args.n_residual_blocks, lora_rank=args.lora_rank,
-        lora_alpha=args.lora_alpha, use_lpips=args.use_lpips, grid_n=args.grid_n,
+        n_residual_blocks=args.n_residual_blocks,
+        ngf=args.ngf, use_lora=not args.no_lora,
+        lora_rank=args.lora_rank, lora_alpha=args.lora_alpha,
+        use_lpips=args.use_lpips, grid_n=args.grid_n,
     )
     summary = run_eval(cfg)
     print(json.dumps(summary, indent=2))
