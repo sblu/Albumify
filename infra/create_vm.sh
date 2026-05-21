@@ -14,13 +14,15 @@
 #   IMAGE_PROJECT — default: deeplearning-platform-release
 #
 # Behavior:
-#   --provisioning-model=SPOT         (cheaper, preemptible)
-#   --instance-termination-action=DELETE   (auto-delete on preemption so we
-#                                           don't pay a stopped-instance bill)
+#   SPOT=1 (default)  → --provisioning-model=SPOT + auto-delete on preempt.
+#                        Cheap (~$0.17/hr) but the VM can vanish mid-run.
+#   SPOT=0           → on-demand instance, no preemption risk (~$0.55/hr).
+#                        Use for runs > ~20 min to avoid losing progress.
 #
 # Cost note: T4 spot in us-central1 is ~$0.11/hr GPU + ~$0.06/hr CPU+disk.
-# A full fine-tune at ~471 imgs/epoch × 30 epochs at batch 8 takes ~25 min
-# on T4, so total bill is well under $1.
+# A LoRA fine-tune (30 epochs, batch 8) takes ~25 min on T4 → well under $1
+# either way. A from-scratch ngf=96 60-epoch run takes ~75 min → ~$0.70
+# on-demand vs ~$0.21 spot (but the spot run can be lost partway).
 
 set -euo pipefail
 
@@ -33,8 +35,17 @@ GPU_COUNT="${GPU_COUNT:-1}"
 DISK_GB="${DISK_GB:-100}"
 IMAGE_FAMILY="${IMAGE_FAMILY:-pytorch-2-9-cu129-ubuntu-2204-nvidia-580}"
 IMAGE_PROJECT="${IMAGE_PROJECT:-deeplearning-platform-release}"
+SPOT="${SPOT:-1}"
 
-echo ">>> Creating $VM_NAME in $ZONE on project $PROJECT (spot, auto-delete on preempt)"
+if [ "$SPOT" = "1" ]; then
+  PROVISIONING_FLAGS=(--provisioning-model=SPOT --instance-termination-action=DELETE)
+  PROVISIONING_LABEL="spot, auto-delete on preempt"
+else
+  PROVISIONING_FLAGS=(--provisioning-model=STANDARD)
+  PROVISIONING_LABEL="on-demand"
+fi
+
+echo ">>> Creating $VM_NAME in $ZONE on project $PROJECT ($PROVISIONING_LABEL)"
 gcloud compute instances create "$VM_NAME" \
   --project="$PROJECT" \
   --zone="$ZONE" \
@@ -44,8 +55,7 @@ gcloud compute instances create "$VM_NAME" \
   --image-project="$IMAGE_PROJECT" \
   --boot-disk-size="${DISK_GB}GB" \
   --maintenance-policy=TERMINATE \
-  --provisioning-model=SPOT \
-  --instance-termination-action=DELETE \
+  "${PROVISIONING_FLAGS[@]}" \
   --metadata="install-nvidia-driver=True" \
   --scopes=cloud-platform
 
