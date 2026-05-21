@@ -190,10 +190,16 @@ gcloud compute instances delete albumify-train --zone <ZONE> --project albumarti
 - Project: `albumartifier`. Active config: `albumify`.
 - Pi IP on LAN: `192.168.86.84` (user `scott`).
 - Best threshold for the current rank-8 model on the Pi: `0.95`.
-- **Pi 5 (1 GB) inference budget:** stick to `--size 512` max. At 1024,
-  intermediate feature maps total ~600 MB working set → swap → 141 sec
-  per image (measured). 256 is ~300 ms, 512 is ~1.5 s. For 1024
-  you'd want a 4 GB Pi.
+- **Two Pi 5 devices in play:**
+  - Testing Pi (16 GB RAM, ours): plenty of memory, but compute-bound.
+    1024×1024 measured 141 sec with default thread count — likely
+    capped by ORT defaulting to 1-2 intra-op threads + per-channel
+    INT8 not being especially fast on ARM aarch64. Try `--threads 4`.
+  - Deployment Pi (1 GB RAM, friend's): memory IS the constraint at
+    1024 (working set ~600 MB → swap-thrashing). **Target deployment
+    size: 512 max.** Higher might OOM.
+- Default thread count in `albumify` CLI is 0 (= ORT library default,
+  which is conservative on ARM). Always pass `--threads 4` on Pi 5.
 - Edge fraction in our labels: ~5%. With edge_weight=N, "predict white
   everywhere" gives val_l1 ≈ 0.05*N — sanity check when reading numbers.
 - VGG16 perceptual weights (~530 MB) download once per fresh VM; expect
