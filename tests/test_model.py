@@ -30,6 +30,19 @@ def test_generator_output_shape_matches_input_size():
     assert (y >= 0).all() and (y <= 1).all()  # sigmoid
 
 
+def test_generator_with_sigmoid_false_produces_real_logits():
+    """sigmoid=False is the Plan C training mode — output should not be clamped to [0,1]."""
+    torch.manual_seed(42)
+    g = Generator(sigmoid=False)
+    g.eval()
+    x = torch.randn(1, 3, 64, 64)
+    with torch.no_grad():
+        y = g(x)
+    assert y.shape == (1, 1, 64, 64)
+    assert (y < 0).any() or (y > 1).any(), \
+        f"sigmoid=False output should not be in [0,1]; got min={y.min()}, max={y.max()}"
+
+
 def test_generator_param_count_in_expected_range():
     """Sanity check: ~4.4M params at defaults."""
     g = Generator()
