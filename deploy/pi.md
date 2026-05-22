@@ -78,8 +78,16 @@ albumify --model artifacts/model.int8.rank8.onnx \
   --threshold 0.95
 ```
 
-Measured Pi 5 wall times at 256×256 (INT8, CPU): rank-8 ≈ 2.65 s, ngf-96 ≈
-TBD (see deployment results in the release notes).
+Measured Pi 5 wall times (16 GB Pi 5, INT8, CPU, `--threads 4`):
+
+| Model | 256 | 1024 |
+|:--|:-:|:-:|
+| `v0.1.0-rank8-preview` (12.6 MB) | ~2.65 s | ~130 s |
+| `v0.2.0-ngf96` (27 MB) | ~5 s | ~70 s |
+
+The 1024 numbers are cache-bound — intermediate feature maps spill out of
+the Pi's 2 MB L3 and every access goes to DRAM. On the 1 GB deployment Pi,
+1024 is likely to OOM; stick to 256 (or 512 if you have headroom).
 
 ## 5. Tuning
 
