@@ -28,7 +28,7 @@ from albumify.lora import (
     lora_parameters,
     wrap_conv2d_layers,
 )
-from albumify.loss import L1PerceptualLoss, VGGPerceptualLoss
+from albumify.loss import BCELogitsPerceptualLoss, L1PerceptualLoss, VGGPerceptualLoss
 from albumify.model import Generator, load_pretrained
 from albumify.transforms import PairedTransformConfig
 
@@ -61,6 +61,8 @@ class TrainConfig:
     log_every: int = 20
     eval_every: int = 1  # epochs
     skip_kernel_sizes_for_lora: tuple = ()  # e.g. (7,) to skip the 7x7 head/tail
+    loss_type: str = "l1"                  # "l1" (default) or "bce" (Plan C)
+    bce_weight: float = 1.0                # weight on BCE term when loss_type == "bce"
 
 
 def _seed_all(seed: int) -> None:
@@ -84,33 +86,37 @@ def _make_vgg(use_pretrained: bool, device: torch.device) -> Optional[VGGPercept
 def _evaluate(
     model: torch.nn.Module,
     loader: DataLoader,
-    loss_fn: L1PerceptualLoss,
+    loss_fn: torch.nn.Module,
     device: torch.device,
 ) -> dict[str, float]:
     model.eval()
     total = 0.0
-    l1_acc = 0.0
+    primary_acc = 0.0           # "l1" or "bce", depending on loss_fn
     perc_acc = 0.0
     n_batches = 0
+    primary_key: Optional[str] = None
     with torch.no_grad():
         for cover, label, _ in loader:
             cover = cover.to(device, non_blocking=True)
             label = label.to(device, non_blocking=True)
             pred = model(cover)
             res = loss_fn(pred, label)
+            if primary_key is None:
+                primary_key = "bce" if "bce" in res else "l1"
             total += float(res["total"])
-            l1_acc += float(res["l1"])
+            primary_acc += float(res[primary_key])
             if "perc" in res:
                 perc_acc += float(res["perc"])
             n_batches += 1
     model.train()
     if n_batches == 0:
-        return {"val_total": 0.0, "val_l1": 0.0, "val_perc": 0.0}
-    return {
+        return {"val_total": 0.0, "val_l1": 0.0, "val_bce": 0.0, "val_perc": 0.0}
+    out = {
         "val_total": total / n_batches,
-        "val_l1": l1_acc / n_batches,
         "val_perc": perc_acc / n_batches,
     }
+    out[f"val_{primary_key}"] = primary_acc / n_batches
+    return out
 
 
 def _try_tb_writer(log_dir: Path):
@@ -137,7 +143,12 @@ def train(cfg: TrainConfig) -> dict[str, float]:
     # without device-conversion surprises, optionally wrap with LoRA (creates
     # new CPU conv layers), then move the whole thing to `device` once so
     # every parameter ends up co-located.
-    model = Generator(n_residual_blocks=cfg.n_residual_blocks, ngf=cfg.ngf)
+    apply_sigmoid_in_model = cfg.loss_type != "bce"
+    model = Generator(
+        n_residual_blocks=cfg.n_residual_blocks,
+        ngf=cfg.ngf,
+        sigmoid=apply_sigmoid_in_model,
+    )
     if cfg.pretrained_ckpt:
         missing, unexpected = load_pretrained(model, cfg.pretrained_ckpt, map_location="cpu")
         print(f"[pretrained] missing={len(missing)} unexpected={len(unexpected)}")
@@ -179,11 +190,35 @@ def train(cfg: TrainConfig) -> dict[str, float]:
 
     # ---- Loss ----
     vgg = _make_vgg(cfg.use_vgg_pretrained, device) if cfg.perceptual_weight > 0 else None
-    loss_fn = L1PerceptualLoss(
-        l1_weight=cfg.l1_weight, perceptual_weight=cfg.perceptual_weight,
-        edge_weight=cfg.edge_weight, edge_threshold=cfg.edge_threshold,
-        vgg=vgg,
-    ).to(device)
+    if cfg.loss_type == "bce":
+        # Sanity-check the edge-fraction assumption (BCE pos-weight derivation).
+        try:
+            import numpy as _np
+            from PIL import Image as _Image
+            sample = list(Path(cfg.labels_dir).glob("*.png"))[:20]
+            if sample:
+                fracs = []
+                for p in sample:
+                    arr = _np.asarray(_Image.open(p).convert("L"), dtype=_np.float32) / 255.0
+                    fracs.append(float((arr < cfg.edge_threshold).mean()))
+                mean_frac = float(_np.mean(fracs))
+                print(f"[bce] empirical edge fraction over {len(fracs)} labels: "
+                      f"{mean_frac:.3f} (edge_weight={cfg.edge_weight} assumes ~0.05)")
+        except Exception as exc:  # pragma: no cover - diagnostic only
+            print(f"[bce] edge-fraction sanity check skipped: {exc}")
+        loss_fn = BCELogitsPerceptualLoss(
+            bce_weight=cfg.bce_weight,
+            perceptual_weight=cfg.perceptual_weight,
+            edge_weight=cfg.edge_weight,
+            edge_threshold=cfg.edge_threshold,
+            vgg=vgg,
+        ).to(device)
+    else:
+        loss_fn = L1PerceptualLoss(
+            l1_weight=cfg.l1_weight, perceptual_weight=cfg.perceptual_weight,
+            edge_weight=cfg.edge_weight, edge_threshold=cfg.edge_threshold,
+            vgg=vgg,
+        ).to(device)
 
     # ---- Optimizer ----
     if cfg.use_lora:
@@ -214,7 +249,8 @@ def train(cfg: TrainConfig) -> dict[str, float]:
             global_step += 1
             if tb is not None:
                 tb.add_scalar("loss/train_step_total", float(res["total"].detach()), global_step)
-                tb.add_scalar("loss/train_step_l1", float(res["l1"]), global_step)
+                step_primary_key = "bce" if "bce" in res else "l1"
+                tb.add_scalar(f"loss/train_step_{step_primary_key}", float(res[step_primary_key]), global_step)
                 if "perc" in res:
                     tb.add_scalar("loss/train_step_perc", float(res["perc"]), global_step)
             if global_step % cfg.log_every == 0:
@@ -225,7 +261,7 @@ def train(cfg: TrainConfig) -> dict[str, float]:
         if (epoch + 1) % cfg.eval_every == 0:
             metrics = _evaluate(model, val_loader, loss_fn, device)
         else:
-            metrics = {"val_total": float("nan"), "val_l1": float("nan"), "val_perc": float("nan")}
+            metrics = {"val_total": float("nan"), "val_l1": float("nan"), "val_bce": float("nan"), "val_perc": float("nan")}
         last_log = {
             "epoch": epoch + 1,
             "train_total": avg_train,
@@ -238,7 +274,8 @@ def train(cfg: TrainConfig) -> dict[str, float]:
             tb.add_scalar("loss/train_epoch_total", avg_train, epoch + 1)
             if not math.isnan(metrics.get("val_total", float("nan"))):
                 tb.add_scalar("loss/val_total", metrics["val_total"], epoch + 1)
-                tb.add_scalar("loss/val_l1", metrics["val_l1"], epoch + 1)
+                val_primary = "val_bce" if "val_bce" in metrics else "val_l1"
+                tb.add_scalar(f"loss/{val_primary}", metrics[val_primary], epoch + 1)
                 if metrics.get("val_perc", 0) > 0:
                     tb.add_scalar("loss/val_perc", metrics["val_perc"], epoch + 1)
             tb.flush()
@@ -248,12 +285,23 @@ def train(cfg: TrainConfig) -> dict[str, float]:
         if not math.isnan(val_total) and val_total < best_val:
             best_val = val_total
             torch.save(
-                {"model_state_dict": model.state_dict(), "epoch": epoch + 1, "val_total": val_total},
+                {
+                    "model_state_dict": model.state_dict(),
+                    "epoch": epoch + 1,
+                    "val_total": val_total,
+                    "apply_sigmoid": apply_sigmoid_in_model,
+                    "loss_type": cfg.loss_type,
+                },
                 out_dir / "best.pt",
             )
             print(f"[ckpt] saved best.pt (val_total={val_total:.4f})")
         torch.save(
-            {"model_state_dict": model.state_dict(), "epoch": epoch + 1},
+            {
+                "model_state_dict": model.state_dict(),
+                "epoch": epoch + 1,
+                "apply_sigmoid": apply_sigmoid_in_model,
+                "loss_type": cfg.loss_type,
+            },
             out_dir / "last.pt",
         )
 
@@ -292,8 +340,18 @@ def main() -> None:
                    help="Generator base channel count. 64 = 11.7M params, 96 = 25.5M, 128 = 45M.")
     p.add_argument("--no-lora",           action="store_true",
                    help="Skip LoRA wrap + freeze; train every parameter (full fine-tune).")
+    p.add_argument("--loss",              choices=("l1", "bce"), default="l1",
+                   help="Training loss. 'l1' = today's L1 (+ perceptual). "
+                        "'bce' = BCE-with-logits on hard-thresholded targets "
+                        "(Plan C: drops sigmoid from Generator).")
+    p.add_argument("--bce-weight",        type=float, default=1.0,
+                   help="Weight on the BCE term when --loss bce.")
     p.add_argument("--seed",              type=int, default=0)
     args = p.parse_args()
+    # When --loss bce and user did not explicitly pass --edge-weight, default to 19
+    # (matches the measured ~5% edge fraction so per-pixel gradients are balanced).
+    if args.loss == "bce" and args.edge_weight == 0.0:
+        args.edge_weight = 19.0
     cfg = TrainConfig(
         splits_dir=args.splits_dir, covers_dir=args.covers_dir, labels_dir=args.labels_dir,
         pretrained_ckpt=args.pretrained_ckpt, out_dir=args.out_dir,
@@ -306,6 +364,8 @@ def main() -> None:
         n_residual_blocks=args.n_residual_blocks,
         ngf=args.ngf, use_lora=not args.no_lora,
         seed=args.seed,
+        loss_type=args.loss,
+        bce_weight=args.bce_weight,
     )
     train(cfg)
 
