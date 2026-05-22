@@ -12,6 +12,34 @@ LoRA-fine-tuned model that fits on a Raspberry Pi 5 in ~5 MB.
 | 5. export      | merge LoRA → ONNX FP32 → INT8 quantize | `best.pt` | `artifacts/model.int8.onnx` |
 | 6. infer       | onnxruntime CLI, runs on laptop or Pi 5 | `cover.jpg` | `line.png` |
 
+## Try the pretrained model (rank-8 LoRA preview)
+
+A rank-8 LoRA model trained on ~470 album covers is attached to the
+[`v0.1.0-rank8-preview`](https://github.com/sblu/Albumify/releases/tag/v0.1.0-rank8-preview)
+release. It produces faint *ghost-line* drawings — recognizable, but not yet
+shippable. A larger from-scratch model is in training; this preview lets you
+exercise the inference pipeline without retraining.
+
+```bash
+git clone https://github.com/sblu/Albumify.git
+cd Albumify
+python3 -m venv .venv && . .venv/bin/activate
+pip install --upgrade pip
+pip install -e .                    # pillow + numpy + onnxruntime + CLI
+
+mkdir -p artifacts
+curl -L -o artifacts/model.int8.onnx \
+  https://github.com/sblu/Albumify/releases/download/v0.1.0-rank8-preview/model.int8.onnx
+
+albumify --model artifacts/model.int8.onnx \
+  --in path/to/cover.jpg \
+  --out line.png \
+  --size 256 \
+  --threshold 0.95            # lifts the faint ghost lines to clean black
+```
+
+Raspberry Pi 5 deployment: see [`deploy/pi.md`](deploy/pi.md).
+
 ## Quick map
 
 - `albumify/musicbrainz.py`, `albumify/caa.py`, `albumify/fetch_covers.py` — fetch pipeline
