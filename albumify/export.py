@@ -40,7 +40,12 @@ def export_onnx(
     out_fp32_path = Path(out_fp32_path)
     out_fp32_path.parent.mkdir(parents=True, exist_ok=True)
 
-    model = Generator(n_residual_blocks=n_residual_blocks, ngf=ngf)
+    ckpt = torch.load(str(ckpt_path), map_location="cpu", weights_only=False)
+    apply_sigmoid_in_model = bool(ckpt.get("apply_sigmoid", True))
+    model = Generator(
+        n_residual_blocks=n_residual_blocks, ngf=ngf,
+        sigmoid=apply_sigmoid_in_model,
+    )
     n_merged = 0
     if use_lora:
         wrap_conv2d_layers(
@@ -48,11 +53,20 @@ def export_onnx(
             skip_kernel_sizes=tuple(skip_kernel_sizes_for_lora),
         )
         freeze_non_lora(model)
-    ckpt = torch.load(str(ckpt_path), map_location="cpu")
     state = ckpt.get("model_state_dict", ckpt)
     model.load_state_dict(state, strict=False)
     if use_lora:
         n_merged = merge_all_lora(model)
+    if not apply_sigmoid_in_model:
+        # Add sigmoid back externally so the exported ONNX always emits [0,1].
+        import torch.nn as _nn
+        class _SigmoidWrap(_nn.Module):
+            def __init__(self, inner: _nn.Module):
+                super().__init__()
+                self.inner = inner
+            def forward(self, x):
+                return torch.sigmoid(self.inner(x))
+        model = _SigmoidWrap(model)
     model.eval()
 
     dummy = torch.randn(1, 3, example_size, example_size)
