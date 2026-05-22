@@ -139,15 +139,30 @@ def run_eval(cfg: EvalConfig) -> dict[str, float]:
     # once to `device` so every parameter ends up co-located. Same ordering
     # as albumify/train.py — moving to device before wrap leaves the new
     # lora_A/lora_B convs on CPU and the first forward crashes.
-    model = Generator(n_residual_blocks=cfg.n_residual_blocks, ngf=cfg.ngf)
+    ckpt = torch.load(cfg.ckpt_path, map_location="cpu", weights_only=False)
+    apply_sigmoid_in_model = bool(ckpt.get("apply_sigmoid", True))
+    model = Generator(
+        n_residual_blocks=cfg.n_residual_blocks,
+        ngf=cfg.ngf,
+        sigmoid=apply_sigmoid_in_model,
+    )
     if cfg.use_lora:
         wrap_conv2d_layers(
             model, rank=cfg.lora_rank, alpha=cfg.lora_alpha,
             skip_kernel_sizes=tuple(cfg.skip_kernel_sizes_for_lora),
         )
         freeze_non_lora(model)
-    ckpt = torch.load(cfg.ckpt_path, map_location="cpu")
     model.load_state_dict(ckpt["model_state_dict"])
+    if not apply_sigmoid_in_model:
+        # Wrap so SSIM/edge-F1/val_grid all see values in [0, 1].
+        import torch.nn as _nn
+        class _SigmoidWrap(_nn.Module):
+            def __init__(self, inner: _nn.Module):
+                super().__init__()
+                self.inner = inner
+            def forward(self, x):
+                return torch.sigmoid(self.inner(x))
+        model = _SigmoidWrap(model)
     model = model.to(device)
     model.eval()
 
