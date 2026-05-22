@@ -128,3 +128,66 @@ class L1PerceptualLoss(nn.Module):
             result["perc"] = perc.detach()
         result["total"] = total
         return result
+
+
+def edge_weighted_bce_logits(
+    logits: torch.Tensor,
+    target: torch.Tensor,
+    *,
+    edge_threshold: float = 0.5,
+    edge_weight: float = 19.0,
+) -> torch.Tensor:
+    """BCE-with-logits on hard-thresholded targets, with edge-pixel weighting.
+
+    Mirrors `edge_weighted_l1`: target is grayscale in [0, 1], thresholded to
+    {0, 1} at `edge_threshold`. A dilated edge mask (max_pool2d k=3) up-weights
+    edge pixels (1 + edge_weight)x so the loss is not dominated by the ~95%
+    background pixels.
+
+    `edge_weight=0` reduces to plain `F.binary_cross_entropy_with_logits` on
+    the binarized target.
+    """
+    target_bin = (target >= edge_threshold).float()
+    if edge_weight == 0:
+        return F.binary_cross_entropy_with_logits(logits, target_bin)
+    edges = (target < edge_threshold).float()
+    edges = F.max_pool2d(edges, kernel_size=3, stride=1, padding=1)
+    weights = 1.0 + edge_weight * edges
+    return F.binary_cross_entropy_with_logits(logits, target_bin, weight=weights)
+
+
+class BCELogitsPerceptualLoss(nn.Module):
+    """BCE-with-logits + optional VGG perceptual on sigmoid(logits)."""
+
+    def __init__(
+        self,
+        *,
+        bce_weight: float = 1.0,
+        perceptual_weight: float = 0.1,
+        edge_weight: float = 19.0,
+        edge_threshold: float = 0.5,
+        vgg: Optional["VGGPerceptualLoss"] = None,
+    ):
+        super().__init__()
+        self.bce_weight = bce_weight
+        self.perceptual_weight = perceptual_weight
+        self.edge_weight = edge_weight
+        self.edge_threshold = edge_threshold
+        self.vgg = vgg
+        if perceptual_weight > 0 and vgg is None:
+            raise ValueError("perceptual_weight > 0 requires a VGGPerceptualLoss instance")
+
+    def forward(self, logits: torch.Tensor, target: torch.Tensor) -> dict[str, torch.Tensor]:
+        bce = edge_weighted_bce_logits(
+            logits, target,
+            edge_threshold=self.edge_threshold, edge_weight=self.edge_weight,
+        )
+        total = self.bce_weight * bce
+        result: dict[str, torch.Tensor] = {"bce": bce.detach()}
+        if self.perceptual_weight > 0 and self.vgg is not None:
+            pred_prob = torch.sigmoid(logits)
+            perc = self.vgg(pred_prob, target)
+            total = total + self.perceptual_weight * perc
+            result["perc"] = perc.detach()
+        result["total"] = total
+        return result
