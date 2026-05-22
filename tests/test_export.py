@@ -62,3 +62,30 @@ def test_int8_quantization_produces_runnable_model(tmp_path: Path):
     x = np.random.RandomState(0).randn(1, 3, 64, 64).astype(np.float32)
     y = sess.run(["line"], {"cover": x})[0]
     assert y.shape == (1, 1, 64, 64)
+
+
+def test_export_wraps_sigmoid_for_apply_sigmoid_false_ckpt(tmp_path: Path):
+    """Plan C ckpts (apply_sigmoid=False) must produce ONNX in [0,1]."""
+    g = Generator(n_residual_blocks=1, ngf=8, sigmoid=False)
+    ckpt_path = tmp_path / "ckpt-noprep.pt"
+    torch.save({
+        "model_state_dict": g.state_dict(),
+        "apply_sigmoid": False,
+        "loss_type": "bce",
+    }, ckpt_path)
+
+    fp32 = tmp_path / "plan-c.fp32.onnx"
+    export_onnx(
+        ckpt_path=ckpt_path, out_fp32_path=fp32,
+        n_residual_blocks=1, ngf=8,
+        use_lora=False,
+        example_size=64,
+    )
+    assert fp32.exists() and fp32.stat().st_size > 0
+
+    sess = ort.InferenceSession(str(fp32), providers=["CPUExecutionProvider"])
+    cover = np.random.RandomState(0).rand(1, 3, 64, 64).astype(np.float32)
+    out = sess.run(["line"], {"cover": cover})[0]
+    assert out.shape == (1, 1, 64, 64)
+    assert (out >= 0).all() and (out <= 1).all(), \
+        f"ONNX output out of [0,1]: min={out.min()}, max={out.max()}"
