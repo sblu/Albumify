@@ -54,3 +54,51 @@ def test_train_smoke_runs_two_epochs_and_writes_ckpt(tmp_path: Path):
     assert (runs / "smoke" / "config.json").exists()
     assert (runs / "smoke" / "summary.json").exists()
     assert "best_val_total" in summary
+
+
+def test_train_smoke_bce_loss_writes_apply_sigmoid_false(tmp_path: Path):
+    """--loss bce should train Generator(sigmoid=False) and stamp ckpt metadata."""
+    covers = tmp_path / "covers"; covers.mkdir()
+    labels = tmp_path / "labels"; labels.mkdir()
+    splits = tmp_path / "splits"; splits.mkdir()
+    runs = tmp_path / "runs"
+
+    slugs = [f"s{i}" for i in range(6)]
+    for s in slugs:
+        Image.new("RGB", (64, 64), (40, 80, 160)).save(covers / f"{s}.jpg")
+        lbl = Image.new("L", (64, 64), 255)
+        for x in range(64):
+            lbl.putpixel((x, 32), 0)
+        lbl.save(labels / f"{s}.png")
+    split_mod.write_splits(splits, slugs[:4], slugs[4:])
+
+    cfg = TrainConfig(
+        splits_dir=str(splits),
+        covers_dir=str(covers),
+        labels_dir=str(labels),
+        out_dir=str(runs / "smoke-bce"),
+        img_size=64,
+        resize_short_to=72,
+        epochs=2,
+        batch_size=2,
+        lr=1e-3,
+        num_workers=0,
+        use_lora=False,
+        n_residual_blocks=1,
+        perceptual_weight=0.0,    # avoid VGG download
+        use_vgg_pretrained=False,
+        edge_weight=19.0,
+        seed=0,
+        loss_type="bce",
+        bce_weight=1.0,
+    )
+    summary = train(cfg)
+    ckpt_path = runs / "smoke-bce" / "best.pt"
+    if not ckpt_path.exists():
+        ckpt_path = runs / "smoke-bce" / "last.pt"
+    assert ckpt_path.exists()
+
+    ckpt = torch.load(str(ckpt_path), map_location="cpu", weights_only=False)
+    assert ckpt.get("apply_sigmoid") is False
+    assert ckpt.get("loss_type") == "bce"
+    assert "best_val_total" in summary
