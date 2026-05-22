@@ -75,7 +75,8 @@ class AlbumDataset(Dataset):
         # augmentation sequence but the same (seed, idx) always reproduces.
         worker = torch.utils.data.get_worker_info()
         worker_id = worker.id if worker is not None else 0
-        rng = random.Random((self.seed, worker_id, idx, self.train))
+        # hash() because Python 3.12 stopped accepting raw tuples as seed input.
+        rng = random.Random(hash((self.seed, worker_id, idx, self.train)))
         cover_t, label_t = paired_transform(
             cover_img, label_img, cfg=self.cfg, rng=rng, train=self.train,
         )
