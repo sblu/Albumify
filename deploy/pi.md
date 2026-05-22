@@ -32,8 +32,29 @@ pip install -e .                  # installs pillow + numpy + onnxruntime + CLI 
 
 ## 3. Drop the trained model on the device
 
-From your laptop after training on the GCP VM (or pulled out of `artifacts/`
-on this repo when the user produces a release):
+Two published models are available — pick by size / quality. Both expect
+`--threshold 0.95` at inference.
+
+| Release | Size | Notes |
+|:--|:-:|:--|
+| `v0.2.0-ngf96` (recommended) | 27 MB | Clearer, bolder lines |
+| `v0.1.0-rank8-preview` | 12.6 MB | Faint "ghost" lines, fastest |
+
+Pull whichever (or both) directly on the Pi:
+
+```bash
+mkdir -p ~/Albumify/artifacts
+
+# v0.2.0-ngf96 (recommended)
+curl -L -o ~/Albumify/artifacts/model.int8.ngf96.onnx \
+  https://github.com/sblu/Albumify/releases/download/v0.2.0-ngf96/model.int8.onnx
+
+# v0.1.0-rank8-preview
+curl -L -o ~/Albumify/artifacts/model.int8.rank8.onnx \
+  https://github.com/sblu/Albumify/releases/download/v0.1.0-rank8-preview/model.int8.onnx
+```
+
+Or scp a locally-trained model from the laptop:
 
 ```bash
 scp artifacts/model.int8.onnx pi@pi5.local:/home/pi/Albumify/artifacts/
@@ -42,13 +63,23 @@ scp artifacts/model.int8.onnx pi@pi5.local:/home/pi/Albumify/artifacts/
 ## 4. Run
 
 ```bash
-albumify --model artifacts/model.int8.onnx \
+# ngf-96 (recommended)
+albumify --model artifacts/model.int8.ngf96.onnx \
   --in some-cover.jpg \
   --out some-line.png \
-  --size 256
+  --size 256 \
+  --threshold 0.95
+
+# rank-8 (smaller, fainter)
+albumify --model artifacts/model.int8.rank8.onnx \
+  --in some-cover.jpg \
+  --out some-line.png \
+  --size 256 \
+  --threshold 0.95
 ```
 
-Expected: one or two hundred ms for 256×256 on Pi 5 CPU at INT8.
+Measured Pi 5 wall times at 256×256 (INT8, CPU): rank-8 ≈ 2.65 s, ngf-96 ≈
+TBD (see deployment results in the release notes).
 
 ## 5. Tuning
 
