@@ -1,8 +1,10 @@
-"""Tests for the pure-numpy parts of eval.py. The torch run_eval path is
-covered by manual + VM testing."""
+"""Tests for the pure-numpy parts of eval.py + the torch run_eval path."""
 from __future__ import annotations
 
+from pathlib import Path
+
 import numpy as np
+import pytest
 from PIL import Image
 
 from albumify.eval import edge_f1, render_grid, render_triplet_row, ssim_pair
@@ -79,3 +81,54 @@ def test_render_grid_stacks_rows():
 def test_render_grid_empty_returns_pixel():
     g = render_grid([])
     assert g.size == (1, 1)
+
+
+def test_eval_loads_apply_sigmoid_false_ckpt_and_wraps_externally(tmp_path: Path):
+    """Build a tiny no-sigmoid ckpt, run eval, assert metrics are finite + in range.
+
+    If the sigmoid wrap weren't applied, the renderer would see raw logits and
+    SSIM/edge-F1 would be NaN or out-of-range.
+    """
+    torch = pytest.importorskip("torch")
+    pytest.importorskip("torchvision")
+    from albumify.eval import EvalConfig, run_eval
+    from albumify.model import Generator
+
+    covers = tmp_path / "covers"; covers.mkdir()
+    labels = tmp_path / "labels"; labels.mkdir()
+    splits = tmp_path / "splits"; splits.mkdir()
+    out_dir = tmp_path / "eval-out"
+
+    slugs = [f"v{i}" for i in range(2)]
+    for s in slugs:
+        Image.new("RGB", (64, 64), (40, 80, 160)).save(covers / f"{s}.jpg")
+        lbl = Image.new("L", (64, 64), 255)
+        for x in range(64):
+            lbl.putpixel((x, 32), 0)
+        lbl.save(labels / f"{s}.png")
+    (splits / "val.txt").write_text("\n".join(slugs) + "\n")
+    (splits / "train.txt").write_text("")
+
+    g = Generator(n_residual_blocks=1, ngf=8, sigmoid=False)
+    ckpt_path = tmp_path / "noprep.pt"
+    torch.save({
+        "model_state_dict": g.state_dict(),
+        "epoch": 1,
+        "val_total": 0.0,
+        "apply_sigmoid": False,
+        "loss_type": "bce",
+    }, ckpt_path)
+
+    cfg = EvalConfig(
+        splits_dir=str(splits), covers_dir=str(covers), labels_dir=str(labels),
+        ckpt_path=str(ckpt_path), out_dir=str(out_dir),
+        img_size=64, n_residual_blocks=1, ngf=8,
+        use_lora=False,
+        use_lpips=False,
+        grid_n=2,
+    )
+    summary = run_eval(cfg)
+    assert np.isfinite(summary["ssim"])
+    assert 0.0 <= summary["f1"] <= 1.0
+    assert 0.0 <= summary["precision"] <= 1.0
+    assert 0.0 <= summary["recall"] <= 1.0
