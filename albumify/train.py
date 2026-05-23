@@ -141,6 +141,15 @@ def train(cfg: TrainConfig) -> dict[str, float]:
     if cfg.pretrained_ckpt:
         missing, unexpected = load_pretrained(model, cfg.pretrained_ckpt, map_location="cpu")
         print(f"[pretrained] missing={len(missing)} unexpected={len(unexpected)}")
+        _diag_cap = 8
+        if missing:
+            head = ", ".join(missing[:_diag_cap])
+            tail = f" (+{len(missing) - _diag_cap} more)" if len(missing) > _diag_cap else ""
+            print(f"[pretrained] missing keys (first {min(len(missing), _diag_cap)}): {head}{tail}")
+        if unexpected:
+            head = ", ".join(unexpected[:_diag_cap])
+            tail = f" (+{len(unexpected) - _diag_cap} more)" if len(unexpected) > _diag_cap else ""
+            print(f"[pretrained] unexpected keys (first {min(len(unexpected), _diag_cap)}): {head}{tail}")
     if cfg.use_lora:
         n_wrapped = wrap_conv2d_layers(
             model, rank=cfg.lora_rank, alpha=cfg.lora_alpha,
