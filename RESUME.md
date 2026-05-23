@@ -1,225 +1,110 @@
 # Resume notes — pick up training tomorrow
 
-Last touched: 2026-05-21 early AM.
-Working tree = `origin/main` at `af390ae` (commit listing below).
+Last touched: 2026-05-23. Three BCE experiments (Plans C, D, E) attempted and
+failed to beat **v0.2.0** (the L1+ngf=96+threshold-0.95 model already shipped
+as a GitHub Release). v0.2.0 remains the recommended model.
 
 ## TL;DR
 
-End-to-end scaffolding is done and tested. The first trained model is
-visible-but-not-shippable. We diagnosed why (sigmoid saturation +
-class imbalance), shipped fixes, started the bigger-model retrain,
-hit GCP T4 capacity exhaustion across us-central1 zones a/b/c/f.
-Stopped to wait for capacity.
+- v0.2.0-ngf96 is still the official line-drawing model. Don't run more BCE
+  + warm-start experiments — three different configurations all failed in the
+  same direction. The bottleneck is **data quantity**, not algorithm choice.
+- All experiment artifacts (ckpts, ONNX, val_grids, holdout renders, 6-way
+  comparison montages) live under `runs/`. The relevant branches are pushed
+  to origin and waiting on a merge-strategy decision.
+- The smaller, important improvement that came out of today: the `[pretrained]`
+  diagnostic in `train.py` now prints the first 8 missing/unexpected key names,
+  which surfaced the upstream-vs-ours residual-block mismatch (3 vs 9). Worth
+  cherry-picking back to main on its own.
 
-## What works right now
+## What we've trained (running scoreboard)
 
-- 471 cover-label pairs cleaned, split 424/47 train/val. ✓
-- Review web app produced final approved labels. ✓
-- LoRA rank-8 model trained successfully on GCP T4 spot (~25 min, ~$0.25). ✓
-- Exported INT8 ONNX (`artifacts/model.int8.onnx`, 12.6 MB). ✓
-- Pi 5 inference pipeline works at 256/512/1024 sizes. ✓
-- `--threshold` post-process in `albumify` CLI lets you pull faint
-  ghost predictions into binary lines. ✓
-- 10-image holdout set at `data/holdout/`. ✓
+| run | recipe | best val | F1 | visual verdict |
+|---|---|---|---|---|
+| `runs/lora-rank8` (v0.1.0) | LoRA r=8 on contour-style, L1, edge_weight=0 | — | — | Faint ghosts. Recognizable only at `--threshold 0.95`. |
+| `runs/ngf96` (v0.2.0, **shipped**) | Full fine-tune, L1, ngf=96 from scratch, edge-weighted | — | — | **Winner.** Clean bold lines at `--threshold 0.95`. |
+| `runs/ngf96-bce` (Plan C) | Full fine-tune, BCE, ngf=96 from scratch, perc=0.1 | 2.22 @ ep19 | 0.258 | Sketchy/dotted but recognizable at thr 0.60. |
+| `runs/lora-r16-bce` (Plan D) | LoRA r=16 + warm-start, BCE, perc=0 | 2.22 @ ep25 | 0.152 | Pretrained soft-pencil dominates. Sparse at thr 0.67. |
+| `runs/full-bce-warm-ngf64` (Plan E) | Full fine-tune + warm-start, BCE, ngf=64, perc=0 | 2.25 @ ep25 | 0.160 | Same as Plan D — pretrained character sticky. |
 
-## What we've trained (and what they produced)
+## What today actually taught us
 
-| run | params | result | location |
-|---|---|---|---|
-| `runs/lora-rank8` (epoch 29) | LoRA r=8 on contour-style, edge_weight=0 | Faint ghost line drawings. Recognizable at `--threshold 0.95`. Not shippable. | `artifacts/model.int8.onnx` on laptop + Pi |
-| `runs/lora-rank16-edge` (preempted at epoch 13) | LoRA r=16, edge_weight=15, lr=3e-3 | Was finally improving (val_l1 0.708 → 0.685) when GCP preempted the VM. Lost. | gone |
+1. **The pretrained Informative-Drawings checkpoint is "sticky."** Plans D and
+   E both warm-started from it; one with LoRA r=16 (847K trainable), one with
+   full fine-tune (11.4M trainable). Both landed in the same visual basin:
+   soft photographic pencil sketches that, when thresholded, lose most
+   non-title structure. Capacity wasn't the bottleneck.
 
-## Root cause we identified
+2. **Architectural mismatch we didn't know about:** upstream Informative
+   Drawings has 3 residual blocks; our `Generator` instantiates 9. The new
+   diagnostic print revealed all 24 missing keys are from `model2.3` through
+   `model2.8` — i.e., residual blocks 3–8 are random-init in every
+   warm-started run we've ever done (including Plan B v0.1.0 and v0.2.0
+   when the pretrained ckpt is loaded).
 
-The model output saturates near sigmoid(+∞)=1 ("predict all white").
-Plain L1 loss has a flat gradient at saturation, so the model can't
-escape "all white" no matter how high we crank LR or edge_weight.
+3. **BCE-with-logits works as designed**, but only "modestly." Plan C
+   (no warm-start) got to a more committed regime (need `--threshold 0.60`
+   instead of v0.2.0's `0.95`) but at the cost of dotted/sketchy lines.
 
-The first signs were:
-- Train converges quickly, val barely moves.
-- val_l1 sits at ~0.70 with edge_weight=15 — which is exactly the value
-  you'd get if the model predicts pred=1 everywhere.
+4. **L1 + threshold 0.95 is still the cleanest path.** Three BCE variants
+   couldn't beat it on visual quality.
 
-## Plan B (already coded, ready to run)
+## Branches still in play
 
-Bigger model from scratch (no LoRA), with edge-weighted L1, longer epochs.
+- `feat/plan-c-bce-logits` (pushed): the BCE wiring — `--loss bce` CLI,
+  `apply_sigmoid` ckpt metadata, eval/export external-sigmoid wrap. **Worth
+  merging to main eventually** — clean code, all tests pass.
+- `feat/plan-d-bce-warm-start` (pushed): docs only on top of Plan C. Merge
+  upstream from Plan C.
+- `feat/plan-e-full-bce-warmstart` (pushed): docs + the diagnostic-print
+  improvement on top of Plan C. **The diagnostic-print commit is independently
+  useful** — cherry-pick it to main regardless of whether Plan E merges.
 
-Code changes are all in `main`:
-- `--ngf 96` flag on train/eval/export
-- `--no-lora` flag on train/eval/export
-- `SPOT=0` env var on `infra/create_vm.sh` for on-demand VM
+Merge order to consider: cherry-pick `da875d9` (diagnostic print) onto main,
+then merge `feat/plan-c-bce-logits` onto main, then optionally tag Plans D
+and E's docs by merging their branches as historical record.
 
-Training command for next time, on the VM:
+## What to try next (in EV order)
 
-```bash
-mkdir -p runs/ngf96-scratch
-python -m albumify.train \
-  --splits-dir data/splits \
-  --covers-dir data/covers \
-  --labels-dir data/labels \
-  --no-lora --ngf 96 \
-  --out-dir runs/ngf96-scratch \
-  --epochs 60 --batch-size 8 --lr 2e-4 \
-  --perceptual-weight 0.1 \
-  --edge-weight 10.0 \
-  2>&1 | tee runs/ngf96-scratch/train.log
-```
+1. **More data.** ~500 more cover/label pairs through the existing review-app
+   pipeline. This is the single highest-EV next move. Three different
+   loss/init experiments couldn't compensate for 424 covers; another 500
+   should give the model the localization signal it currently lacks.
+2. **Cheap post-processing of v0.2.0 outputs.** Morphological close +
+   skeletonize on the thresholded result. Free, no retraining. Could close
+   the "scattered dots vs single lines" gap.
+3. **Match the upstream architecture more carefully.** Try `--n-residual-blocks 3`
+   for warm-start runs so the pretrained ckpt loads strict — eliminates the
+   24 random-init residual block params. This is a one-flag-change retest,
+   ~$0.15, worth doing before declaring BCE+warmstart dead-end if you want
+   to be thorough. But evidence so far says don't bother.
 
-Notes for that run:
-- ~25.5M params at ngf=96 vs ~11.7M at ngf=64.
-- ~75 min on T4 (vs ~25 min for the LoRA runs).
-- INT8 export will be ~25-30 MB (vs 12.6 MB). Pi 5 1 GB RAM handles it fine
-  at 256 and 512; 1024 may OOM.
-- No pretrained checkpoint needed (training from scratch). Skipping the
-  `informative_drawings.pth` upload saves a minute.
-- On-demand cost: ~$0.55 if it runs without preemption.
+## What NOT to try next
 
-## Plan C (if Plan B's bigger-model run still looks like ghost lines)
+- Another BCE variant on the current dataset. Three runs converged to the
+  same place; one more won't move the needle.
+- Bigger model (ngf=128, more blocks). No data to back that up.
+- LoRA at higher rank. Plan D already proved LoRA-on-warm-start has the
+  pretrained-bias problem, and rank wasn't the dominant factor.
 
-Architectural fix: remove sigmoid from Generator, train with
-`F.binary_cross_entropy_with_logits` (no saturation in the gradient).
-Then add sigmoid back at export time. Not yet coded. ~30 min of work
-before running.
+## Pre-existing issues still open (none blocking)
 
-## How to pick up tomorrow
+- `tests/test_model.py::test_generator_param_count_in_expected_range` —
+  stale 4–5M assertion; actual is 11.4M at ngf=64. One-line fix.
+- `tests/test_export.py::test_int8_quantization_produces_runnable_model` —
+  toolchain regression in the DLVM's newer onnxruntime: int8 export
+  produces a `ConvInteger(10)` op the runtime can't load. **Blocks Pi
+  deployment** of any newly-exported INT8 ONNX from a fresh VM. Workarounds:
+  use FP32 ONNX (works), or fix the export pre-processing per the warning
+  message. v0.2.0's existing INT8 release artifact is unaffected.
 
-### 0. (skip if obvious) Verify state
+## Infra notes for next VM run
 
-```
-cd /home/scott/Desktop/AlbumArtModelClaude
-git status                     # should be clean
-git pull                       # nothing to pull; double-check
-ls artifacts/                  # informative_drawings.pth + model.int8.onnx
-ls data/holdout/ | head        # 10 PNGs + README.md
-```
-
-### 1. Spin up a VM
-
-T4 capacity in us-central1 was tight last night. Sequence to try
-(stop at first success):
-
-```bash
-# Try on-demand zones in order
-PROJECT=albumartifier SPOT=0 ZONE=us-central1-a ./infra/create_vm.sh
-PROJECT=albumartifier SPOT=0 ZONE=us-central1-b ./infra/create_vm.sh
-PROJECT=albumartifier SPOT=0 ZONE=us-central1-c ./infra/create_vm.sh
-PROJECT=albumartifier SPOT=0 ZONE=us-central1-f ./infra/create_vm.sh
-# Fall back to spot if all on-demand fails
-PROJECT=albumartifier ZONE=us-central1-a ./infra/create_vm.sh
-```
-
-If a create succeeds in a zone other than `us-central1-a`, remember to
-pass that `--zone` to every subsequent `gcloud compute ssh|scp` call.
-
-### 2. SSH in + install deps
-
-```
-gcloud compute ssh albumify-train --zone <ZONE> --project albumartifier
-
-# On the VM:
-sudo apt update
-sudo apt install -y python3-venv python3-pip
-git clone https://github.com/sblu/Albumify.git
-cd Albumify
-./infra/setup_vm.sh
-```
-
-### 3. Upload data + pretrained ckpt (from laptop)
-
-```
-cd /home/scott/Desktop/AlbumArtModelClaude
-gcloud compute ssh albumify-train --zone <ZONE> --project albumartifier \
-  --command 'mkdir -p ~/Albumify/artifacts'
-gcloud compute scp --zone <ZONE> --project albumartifier --recurse \
-  data/covers data/labels data/splits data/albums.json \
-  albumify-train:~/Albumify/data/
-gcloud compute scp --zone <ZONE> --project albumartifier \
-  artifacts/informative_drawings.pth \
-  albumify-train:~/Albumify/artifacts/informative_drawings.pth
-```
-
-### 4. Start the Plan-B training
-
-```
-cd ~/Albumify
-. .venv/bin/activate
-mkdir -p runs/ngf96-scratch
-tmux new -s train
-# ... run the python command above ...
-# Ctrl-b d to detach
-```
-
-### 5. Monitor
-
-Set up the SSH tunnel from laptop:
-```
-gcloud compute ssh albumify-train --zone <ZONE> --project albumartifier -- \
-  -L 6006:localhost:6006 -N
-```
-Then on a 2nd VM session, start `tensorboard --logdir runs/ngf96-scratch/tb --port 6006 --bind_all`.
-Open http://localhost:6006/ in your browser.
-
-### 6. After training (~75 min):
-
-```
-# Eval (specify --ngf 96 --no-lora to match training)
-python -m albumify.eval \
-  --splits-dir data/splits --covers-dir data/covers --labels-dir data/labels \
-  --ckpt-path runs/ngf96-scratch/best.pt \
-  --no-lora --ngf 96 \
-  --out-dir runs/ngf96-scratch/eval --grid-n 32
-
-# Export
-python -m albumify.export \
-  --ckpt-path runs/ngf96-scratch/best.pt \
-  --no-lora --ngf 96 \
-  --out-dir artifacts --int8
-
-# Pull val_grid + ONNX to laptop, push ONNX to Pi
-# (commands identical to the rank-8 run; see the chat history if needed)
-```
-
-### 7. DELETE THE VM
-
-```
-gcloud compute instances delete albumify-train --zone <ZONE> --project albumartifier
-```
-
-## Key flags / numbers to remember
-
-- Project: `albumartifier`. Active config: `albumify`.
-- Pi IP on LAN: `192.168.86.84` (user `scott`).
-- Best threshold for the current rank-8 model on the Pi: `0.95`.
-- **Two Pi 5 devices in play:**
-  - Testing Pi (16 GB RAM, ours): not memory-bound by total RAM, but
-    cache-bound at large sizes. Measured wall times:
-    - `--size 256`: 2.65 s ← fast enough for real use
-    - `--size 1024 --threads 4`: 130 s (49× slower for 16× pixels)
-      — superlinear because intermediate feature maps stop fitting in
-      the Pi's 2 MB L3 and every access goes to DRAM.
-  - Deployment Pi (1 GB RAM, friend's): same cache issue, plus actual
-    RAM pressure beyond 512. **Target deployment size: 256.**
-- Default thread count in `albumify` CLI is 0 (= ORT library default).
-  Use `--threads 4` on Pi 5 — minor help but free.
-- Potential model-side perf work for a future session (not blocking):
-  - Replace InstanceNorm with BatchNorm (fuses with Conv at inference).
-  - Replace ReflectionPad with ZeroPad (free, baked into Conv).
-  - Fewer residual blocks (9 → 6) — trades quality for ~30% speed.
-  - Static (calibration-based) INT8 instead of dynamic.
-- Edge fraction in our labels: ~5%. With edge_weight=N, "predict white
-  everywhere" gives val_l1 ≈ 0.05*N — sanity check when reading numbers.
-- VGG16 perceptual weights (~530 MB) download once per fresh VM; expect
-  a 30s pause early in the first epoch of any run with --perceptual-weight > 0.
-
-## Recent commits (for context if returning here)
-
-```
-af390ae feat(infra): SPOT=0 env var picks on-demand VM (no preemption risk)
-ebf815d feat(train/eval/export): --ngf and --no-lora CLI flags for bigger models
-6c08297 chore(deps): add onnxscript to [train] (torch>=2.5 ONNX exporter imports it)
-7edee00 feat(loss+infer): edge-weighted L1 + --threshold post-process for line drawings
-5af841a fix(eval): same .to(device) ordering as train.py to avoid cpu/cuda mix
-1aa410a feat(eval+export+infer): metrics, ONNX export, INT8, and inference CLI
-1879313 feat(train): Informative-Drawings + LoRA-Conv + training loop
-628713f feat(data): train/val split + paired transforms + AlbumDataset
-```
+- **L4 on `g2-standard-4` is the reliable option.** T4 capacity has been
+  exhausted across every US zone on at least two consecutive nights. L4 is
+  faster anyway (~2.5×) and costs about the same total per run.
+- **Use `--tunnel-through-iap` for all `gcloud compute ssh/scp` calls.**
+  Direct port 22 over the public IP times out in the `albumartifier` project's
+  VPC. IAP works fine.
+- Spin-up: `PROJECT=albumartifier SPOT=0 MACHINE_TYPE=g2-standard-4 GPU_TYPE=nvidia-l4 ZONE=us-east1-d ./infra/create_vm.sh`
+- Pricing: ~$0.85/hr on-demand × ~12-15 min per Plan-C-style run = ~$0.20.
