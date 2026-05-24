@@ -29,6 +29,9 @@ train = [
     "lpips>=0.1.4",
     "scikit-image>=0.22",
     "tensorboard>=2.16",
+    "clip @ git+https://github.com/openai/CLIP.git",
+    "ftfy",       # CLIP tokenizer dep
+    "regex",      # CLIP tokenizer dep
 ]
 dev = [
     "pytest>=8",
