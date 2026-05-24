@@ -23,11 +23,11 @@ from PIL import Image
 
 
 def _load_midas(device: torch.device, variant: str = "DPT_Large"):
-    midas = torch.hub.load("intel-isl/MiDaS", variant)
+    midas = torch.hub.load("intel-isl/MiDaS", variant, trust_repo=True)
     midas.eval().to(device)
     for p in midas.parameters():
         p.requires_grad = False
-    transforms = torch.hub.load("intel-isl/MiDaS", "transforms")
+    transforms = torch.hub.load("intel-isl/MiDaS", "transforms", trust_repo=True)
     transform = transforms.dpt_transform if variant in ("DPT_Large", "DPT_Hybrid") else transforms.small_transform
     return midas, transform
 
