@@ -34,6 +34,7 @@ train = [
     "regex",      # CLIP tokenizer dep
     "timm>=0.9",  # MiDaS DPT-Large dep (Plan F3 precompute_depth)
     "gdown>=5",   # Google Drive download for upstream feats2depth ckpt
+    "opencv-python-headless>=4.8",  # MiDaS torch.hub `transforms` entry imports cv2
 ]
 dev = [
     "pytest>=8",
