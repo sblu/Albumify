@@ -11,7 +11,39 @@ from pathlib import Path
 from PIL import Image
 
 from albumify import split as split_mod
-from albumify.train import TrainConfig, train
+from albumify.train import TrainConfig, make_optimizer, train
+
+
+def test_make_optimizer_adam_uses_torch_adam_with_paper_betas():
+    """Plan F: --optimizer adam should yield torch.optim.Adam with β=(0.5, 0.999).
+
+    Matches the Informative-Drawings paper (Supp. Sec 6.3): Adam, lr=2e-4,
+    β=(0.5, 0.999), no weight decay. Distinct from torch.optim.AdamW (decoupled
+    weight decay) which we've been using up through Plan E.
+    """
+    cfg = TrainConfig(optimizer="adam", lr=2e-4, weight_decay=0.0)
+    params = [torch.nn.Parameter(torch.randn(3, 3))]
+    opt = make_optimizer(cfg, params)
+    assert type(opt) is torch.optim.Adam, (
+        f"expected torch.optim.Adam, got {type(opt).__name__}"
+    )
+    group = opt.param_groups[0]
+    assert group["lr"] == pytest.approx(2e-4)
+    assert group["betas"] == (0.5, 0.999)
+    assert group["weight_decay"] == 0.0
+
+
+def test_make_optimizer_adamw_preserves_legacy_behavior():
+    """--optimizer adamw should yield torch.optim.AdamW (Plans A-E default)."""
+    cfg = TrainConfig(optimizer="adamw", lr=1e-3, weight_decay=1e-4)
+    params = [torch.nn.Parameter(torch.randn(3, 3))]
+    opt = make_optimizer(cfg, params)
+    assert type(opt) is torch.optim.AdamW, (
+        f"expected torch.optim.AdamW, got {type(opt).__name__}"
+    )
+    group = opt.param_groups[0]
+    assert group["lr"] == pytest.approx(1e-3)
+    assert group["weight_decay"] == pytest.approx(1e-4)
 
 
 def test_train_smoke_runs_two_epochs_and_writes_ckpt(tmp_path: Path):

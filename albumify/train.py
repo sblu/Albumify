@@ -63,6 +63,23 @@ class TrainConfig:
     skip_kernel_sizes_for_lora: tuple = ()  # e.g. (7,) to skip the 7x7 head/tail
     loss_type: str = "l1"                  # "l1" (default) or "bce" (Plan C)
     bce_weight: float = 1.0                # weight on BCE term when loss_type == "bce"
+    optimizer: str = "adam"                # "adam" (Plan F default, paper-faithful) or "adamw"
+
+
+def make_optimizer(cfg: TrainConfig, params) -> "torch.optim.Optimizer":
+    """Build the optimizer per `cfg.optimizer`.
+
+    "adam"  → torch.optim.Adam,  β=(0.5, 0.999). Matches Informative-Drawings
+              paper (Supp. Sec 6.3) — Plan F default.
+    "adamw" → torch.optim.AdamW, default β. Matches Plans A–E.
+    """
+    if cfg.optimizer == "adam":
+        return torch.optim.Adam(
+            params, lr=cfg.lr, betas=(0.5, 0.999), weight_decay=cfg.weight_decay,
+        )
+    if cfg.optimizer == "adamw":
+        return torch.optim.AdamW(params, lr=cfg.lr, weight_decay=cfg.weight_decay)
+    raise ValueError(f"unknown optimizer: {cfg.optimizer!r} (expected 'adam' or 'adamw')")
 
 
 def _seed_all(seed: int) -> None:
@@ -234,7 +251,7 @@ def train(cfg: TrainConfig) -> dict[str, float]:
         opt_params = list(lora_parameters(model))
     else:
         opt_params = [p for p in model.parameters() if p.requires_grad]
-    opt = torch.optim.AdamW(opt_params, lr=cfg.lr, weight_decay=cfg.weight_decay)
+    opt = make_optimizer(cfg, opt_params)
 
     # ---- Training loop ----
     best_val = math.inf
@@ -355,6 +372,9 @@ def main() -> None:
                         "(Plan C: drops sigmoid from Generator).")
     p.add_argument("--bce-weight",        type=float, default=1.0,
                    help="Weight on the BCE term when --loss bce.")
+    p.add_argument("--optimizer",         choices=("adam", "adamw"), default="adam",
+                   help="adam = paper-faithful Adam with β=(0.5, 0.999) (Plan F default). "
+                        "adamw = decoupled weight decay (Plans A–E).")
     p.add_argument("--seed",              type=int, default=0)
     args = p.parse_args()
     # When --loss bce and user did not explicitly pass --edge-weight, default to 19
@@ -375,6 +395,7 @@ def main() -> None:
         seed=args.seed,
         loss_type=args.loss,
         bce_weight=args.bce_weight,
+        optimizer=args.optimizer,
     )
     train(cfg)
 
