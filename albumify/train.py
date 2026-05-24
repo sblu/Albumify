@@ -65,6 +65,9 @@ class TrainConfig:
     bce_weight: float = 1.0                # weight on BCE term when loss_type == "bce"
     optimizer: str = "adam"                # "adam" (Plan F default, paper-faithful) or "adamw"
     clip_weight: float = 0.0               # Plan F2: CLIP semantic loss (paper default 10.0)
+    geom_weight: float = 0.0               # Plan F3: depth/geom loss (paper default 10.0)
+    depth_cache_dir: Optional[str] = None  # required when geom_weight > 0
+    feats2depth_ckpt: Optional[str] = None # required when geom_weight > 0
 
 
 def make_optimizer(cfg: TrainConfig, params) -> "torch.optim.Optimizer":
@@ -109,6 +112,8 @@ def _evaluate(
     *,
     clip_loss_fn: Optional[torch.nn.Module] = None,
     clip_weight: float = 0.0,
+    geom_loss_fn: Optional[torch.nn.Module] = None,
+    geom_weight: float = 0.0,
     loss_type: str = "l1",
 ) -> dict[str, float]:
     model.eval()
@@ -116,10 +121,11 @@ def _evaluate(
     primary_acc = 0.0           # "l1" or "bce", depending on loss_fn
     perc_acc = 0.0
     clip_acc = 0.0
+    geom_acc = 0.0
     n_batches = 0
     primary_key: Optional[str] = None
     with torch.no_grad():
-        for cover, label, _ in loader:
+        for cover, label, slugs in loader:
             cover = cover.to(device, non_blocking=True)
             label = label.to(device, non_blocking=True)
             pred = model(cover)
@@ -135,15 +141,21 @@ def _evaluate(
                 clip_term = clip_loss_fn(pred_prob, cover)
                 clip_acc += float(clip_term)
                 batch_total += clip_weight * float(clip_term)
+            if geom_loss_fn is not None and geom_weight > 0:
+                pred_prob = torch.sigmoid(pred) if loss_type == "bce" else pred
+                geom_term = geom_loss_fn(pred_prob, list(slugs))
+                geom_acc += float(geom_term)
+                batch_total += geom_weight * float(geom_term)
             total += batch_total
             n_batches += 1
     model.train()
     if n_batches == 0:
-        return {"val_total": 0.0, "val_l1": 0.0, "val_bce": 0.0, "val_perc": 0.0, "val_clip": 0.0}
+        return {"val_total": 0.0, "val_l1": 0.0, "val_bce": 0.0, "val_perc": 0.0, "val_clip": 0.0, "val_geom": 0.0}
     out = {
         "val_total": total / n_batches,
         "val_perc": perc_acc / n_batches,
         "val_clip": clip_acc / n_batches,
+        "val_geom": geom_acc / n_batches,
     }
     out[f"val_{primary_key}"] = primary_acc / n_batches
     return out
@@ -268,6 +280,24 @@ def train(cfg: TrainConfig) -> dict[str, float]:
         n_clip_trainable = sum(p.numel() for p in clip_loss_fn.parameters() if p.requires_grad)
         print(f"[clip] enabled weight={cfg.clip_weight} model=ViT-B/32 params={n_clip_params:,} trainable={n_clip_trainable:,}")
 
+    # ---- Plan F3: optional depth/geometry loss ----
+    geom_loss_fn: Optional[torch.nn.Module] = None
+    if cfg.geom_weight > 0:
+        if not cfg.depth_cache_dir:
+            raise ValueError("--depth-cache-dir is required when --geom-weight > 0.")
+        if not cfg.feats2depth_ckpt:
+            raise ValueError("--feats2depth-ckpt is required when --geom-weight > 0.")
+        from albumify.geom_loss import GeomDepthLoss
+        geom_loss_fn = GeomDepthLoss(
+            depth_cache_dir=cfg.depth_cache_dir,
+            feats2depth_ckpt=cfg.feats2depth_ckpt,
+            device=device,
+        ).to(device)
+        n_geom_params = sum(p.numel() for p in geom_loss_fn.parameters())
+        n_geom_trainable = sum(p.numel() for p in geom_loss_fn.parameters() if p.requires_grad)
+        print(f"[geom] enabled weight={cfg.geom_weight} cache={cfg.depth_cache_dir} "
+              f"params={n_geom_params:,} trainable={n_geom_trainable:,}")
+
     # ---- Optimizer ----
     if cfg.use_lora:
         opt_params = list(lora_parameters(model))
@@ -284,7 +314,7 @@ def train(cfg: TrainConfig) -> dict[str, float]:
         model.train()
         running_total = 0.0
         n_batches = 0
-        for cover, label, _ in train_loader:
+        for cover, label, slugs in train_loader:
             cover = cover.to(device, non_blocking=True)
             label = label.to(device, non_blocking=True)
             pred = model(cover)
@@ -294,6 +324,11 @@ def train(cfg: TrainConfig) -> dict[str, float]:
                 clip_term = clip_loss_fn(pred_prob, cover)
                 res["clip"] = clip_term.detach()
                 res["total"] = res["total"] + cfg.clip_weight * clip_term
+            if geom_loss_fn is not None:
+                pred_prob = torch.sigmoid(pred) if cfg.loss_type == "bce" else pred
+                geom_term = geom_loss_fn(pred_prob, list(slugs))
+                res["geom"] = geom_term.detach()
+                res["total"] = res["total"] + cfg.geom_weight * geom_term
             opt.zero_grad(set_to_none=True)
             res["total"].backward()
             opt.step()
@@ -308,6 +343,8 @@ def train(cfg: TrainConfig) -> dict[str, float]:
                     tb.add_scalar("loss/train_step_perc", float(res["perc"]), global_step)
                 if "clip" in res:
                     tb.add_scalar("loss/train_step_clip", float(res["clip"]), global_step)
+                if "geom" in res:
+                    tb.add_scalar("loss/train_step_geom", float(res["geom"]), global_step)
             if global_step % cfg.log_every == 0:
                 avg = running_total / max(1, n_batches)
                 print(f"epoch={epoch} step={global_step} loss={avg:.4f}")
@@ -317,10 +354,11 @@ def train(cfg: TrainConfig) -> dict[str, float]:
             metrics = _evaluate(
                 model, val_loader, loss_fn, device,
                 clip_loss_fn=clip_loss_fn, clip_weight=cfg.clip_weight,
+                geom_loss_fn=geom_loss_fn, geom_weight=cfg.geom_weight,
                 loss_type=cfg.loss_type,
             )
         else:
-            metrics = {"val_total": float("nan"), "val_l1": float("nan"), "val_bce": float("nan"), "val_perc": float("nan"), "val_clip": float("nan")}
+            metrics = {"val_total": float("nan"), "val_l1": float("nan"), "val_bce": float("nan"), "val_perc": float("nan"), "val_clip": float("nan"), "val_geom": float("nan")}
         last_log = {
             "epoch": epoch + 1,
             "train_total": avg_train,
@@ -410,6 +448,14 @@ def main() -> None:
                         "adamw = decoupled weight decay (Plans A–E).")
     p.add_argument("--clip-weight",       type=float, default=0.0,
                    help="Plan F2: CLIP semantic loss weight. 0 = disabled. Paper default 10.")
+    p.add_argument("--geom-weight",       type=float, default=0.0,
+                   help="Plan F3: depth/geom loss weight. 0 = disabled. Paper default 10.")
+    p.add_argument("--depth-cache-dir",   default=None,
+                   help="Directory of DPT-Large depth maps {slug}.npy (from precompute_depth.py). "
+                        "Required when --geom-weight > 0.")
+    p.add_argument("--feats2depth-ckpt",  default=None,
+                   help="Path to upstream feats2depth.pth checkpoint. "
+                        "Required when --geom-weight > 0.")
     p.add_argument("--seed",              type=int, default=0)
     args = p.parse_args()
     # When --loss bce and user did not explicitly pass --edge-weight, default to 19
@@ -432,6 +478,9 @@ def main() -> None:
         bce_weight=args.bce_weight,
         optimizer=args.optimizer,
         clip_weight=args.clip_weight,
+        geom_weight=args.geom_weight,
+        depth_cache_dir=args.depth_cache_dir,
+        feats2depth_ckpt=args.feats2depth_ckpt,
     )
     train(cfg)
 
