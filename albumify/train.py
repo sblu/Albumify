@@ -64,6 +64,7 @@ class TrainConfig:
     loss_type: str = "l1"                  # "l1" (default) or "bce" (Plan C)
     bce_weight: float = 1.0                # weight on BCE term when loss_type == "bce"
     optimizer: str = "adam"                # "adam" (Plan F default, paper-faithful) or "adamw"
+    clip_weight: float = 0.0               # Plan F2: CLIP semantic loss (paper default 10.0)
 
 
 def make_optimizer(cfg: TrainConfig, params) -> "torch.optim.Optimizer":
@@ -105,11 +106,16 @@ def _evaluate(
     loader: DataLoader,
     loss_fn: torch.nn.Module,
     device: torch.device,
+    *,
+    clip_loss_fn: Optional[torch.nn.Module] = None,
+    clip_weight: float = 0.0,
+    loss_type: str = "l1",
 ) -> dict[str, float]:
     model.eval()
     total = 0.0
     primary_acc = 0.0           # "l1" or "bce", depending on loss_fn
     perc_acc = 0.0
+    clip_acc = 0.0
     n_batches = 0
     primary_key: Optional[str] = None
     with torch.no_grad():
@@ -120,17 +126,24 @@ def _evaluate(
             res = loss_fn(pred, label)
             if primary_key is None:
                 primary_key = "bce" if "bce" in res else "l1"
-            total += float(res["total"])
+            batch_total = float(res["total"])
             primary_acc += float(res[primary_key])
             if "perc" in res:
                 perc_acc += float(res["perc"])
+            if clip_loss_fn is not None and clip_weight > 0:
+                pred_prob = torch.sigmoid(pred) if loss_type == "bce" else pred
+                clip_term = clip_loss_fn(pred_prob, cover)
+                clip_acc += float(clip_term)
+                batch_total += clip_weight * float(clip_term)
+            total += batch_total
             n_batches += 1
     model.train()
     if n_batches == 0:
-        return {"val_total": 0.0, "val_l1": 0.0, "val_bce": 0.0, "val_perc": 0.0}
+        return {"val_total": 0.0, "val_l1": 0.0, "val_bce": 0.0, "val_perc": 0.0, "val_clip": 0.0}
     out = {
         "val_total": total / n_batches,
         "val_perc": perc_acc / n_batches,
+        "val_clip": clip_acc / n_batches,
     }
     out[f"val_{primary_key}"] = primary_acc / n_batches
     return out
@@ -246,6 +259,15 @@ def train(cfg: TrainConfig) -> dict[str, float]:
             vgg=vgg,
         ).to(device)
 
+    # ---- Plan F2: optional CLIP semantic loss ----
+    clip_loss_fn: Optional[torch.nn.Module] = None
+    if cfg.clip_weight > 0:
+        from albumify.clip_loss import CLIPSemanticLoss
+        clip_loss_fn = CLIPSemanticLoss(device=device).to(device)
+        n_clip_params = sum(p.numel() for p in clip_loss_fn.parameters())
+        n_clip_trainable = sum(p.numel() for p in clip_loss_fn.parameters() if p.requires_grad)
+        print(f"[clip] enabled weight={cfg.clip_weight} model=ViT-B/32 params={n_clip_params:,} trainable={n_clip_trainable:,}")
+
     # ---- Optimizer ----
     if cfg.use_lora:
         opt_params = list(lora_parameters(model))
@@ -267,6 +289,11 @@ def train(cfg: TrainConfig) -> dict[str, float]:
             label = label.to(device, non_blocking=True)
             pred = model(cover)
             res = loss_fn(pred, label)
+            if clip_loss_fn is not None:
+                pred_prob = torch.sigmoid(pred) if cfg.loss_type == "bce" else pred
+                clip_term = clip_loss_fn(pred_prob, cover)
+                res["clip"] = clip_term.detach()
+                res["total"] = res["total"] + cfg.clip_weight * clip_term
             opt.zero_grad(set_to_none=True)
             res["total"].backward()
             opt.step()
@@ -279,15 +306,21 @@ def train(cfg: TrainConfig) -> dict[str, float]:
                 tb.add_scalar(f"loss/train_step_{step_primary_key}", float(res[step_primary_key]), global_step)
                 if "perc" in res:
                     tb.add_scalar("loss/train_step_perc", float(res["perc"]), global_step)
+                if "clip" in res:
+                    tb.add_scalar("loss/train_step_clip", float(res["clip"]), global_step)
             if global_step % cfg.log_every == 0:
                 avg = running_total / max(1, n_batches)
                 print(f"epoch={epoch} step={global_step} loss={avg:.4f}")
         avg_train = running_total / max(1, n_batches)
 
         if (epoch + 1) % cfg.eval_every == 0:
-            metrics = _evaluate(model, val_loader, loss_fn, device)
+            metrics = _evaluate(
+                model, val_loader, loss_fn, device,
+                clip_loss_fn=clip_loss_fn, clip_weight=cfg.clip_weight,
+                loss_type=cfg.loss_type,
+            )
         else:
-            metrics = {"val_total": float("nan"), "val_l1": float("nan"), "val_bce": float("nan"), "val_perc": float("nan")}
+            metrics = {"val_total": float("nan"), "val_l1": float("nan"), "val_bce": float("nan"), "val_perc": float("nan"), "val_clip": float("nan")}
         last_log = {
             "epoch": epoch + 1,
             "train_total": avg_train,
@@ -375,6 +408,8 @@ def main() -> None:
     p.add_argument("--optimizer",         choices=("adam", "adamw"), default="adam",
                    help="adam = paper-faithful Adam with β=(0.5, 0.999) (Plan F default). "
                         "adamw = decoupled weight decay (Plans A–E).")
+    p.add_argument("--clip-weight",       type=float, default=0.0,
+                   help="Plan F2: CLIP semantic loss weight. 0 = disabled. Paper default 10.")
     p.add_argument("--seed",              type=int, default=0)
     args = p.parse_args()
     # When --loss bce and user did not explicitly pass --edge-weight, default to 19
@@ -396,6 +431,7 @@ def main() -> None:
         loss_type=args.loss,
         bce_weight=args.bce_weight,
         optimizer=args.optimizer,
+        clip_weight=args.clip_weight,
     )
     train(cfg)
 
