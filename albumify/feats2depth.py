@@ -69,27 +69,35 @@ class _ResnetBlock(nn.Module):
 class GlobalGenerator2(nn.Module):
     """Vendored from upstream informative-drawings/model.py.
 
-    Default constructor arguments match the released `feats2depth.pth`
-    checkpoint: input 768ch (Mixed_6b features), output 1ch depth,
-    n_downsampling=3, n_blocks=9, BatchNorm2d, Tanh output. Do not
-    change defaults without re-training the checkpoint.
+    Default constructor arguments match the **actual released
+    `feats2depth.pth`** layout (verified by strict state_dict load):
 
-    The names "downsampling" / "upsampling" follow upstream — note that
-    the "downsample" loop actually uses ConvTranspose2d (so it doubles
-    spatial size). With Mixed_6b inputs (17×17), the output is ~1088×1088.
+        input_nc=768, output_nc=3, ngf=64,
+        n_downsampling=1, n_blocks=9, n_UPsampling=3,
+        BatchNorm2d, Tanh output.
+
+    The paper supplemental Table 7 prints these as "n_downsampling=3"
+    but the released checkpoint was actually trained with n_downsampling=1
+    (one 512→256 transposed conv) and n_UPsampling=3 (three transposed
+    convs back down to 64 channels). The ResNet blocks live at 256ch.
+
+    Note "downsample" is a misnomer — the loop uses ConvTranspose2d, so
+    it doubles spatial size. From Mixed_6b's 17×17 input, output spatial
+    is roughly 17 → 18 (pad+conv) → 36 (1 transpose) → 36 (resnets) →
+    72→144→288 (3 transposes) = 288×288 with 3 channels.
     """
 
     def __init__(
         self,
         input_nc: int = 768,
-        output_nc: int = 1,
+        output_nc: int = 3,
         ngf: int = 64,
-        n_downsampling: int = 3,
+        n_downsampling: int = 1,
         n_blocks: int = 9,
         norm_layer=nn.BatchNorm2d,
         padding_type: str = "reflect",
         use_sig: bool = False,
-        n_UPsampling: int = 0,
+        n_UPsampling: int = 3,
     ):
         assert n_blocks >= 0
         super().__init__()

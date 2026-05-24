@@ -106,7 +106,11 @@ class GeomDepthLoss(nn.Module):
         # Replicate 1ch -> 3ch so InceptionV3 accepts it.
         pred_3ch = pred_gray.expand(-1, 3, -1, -1) if pred_gray.size(1) == 1 else pred_gray
         feats = self.feature_extractor(pred_3ch)            # [B, 768, 17, 17]
-        depth_pred = self.feats2depth(feats)                # [B, 1, H', W'], Tanh in [-1, 1]
+        depth_pred = self.feats2depth(feats)                # [B, Cd, H', W'], Tanh in [-1, 1]
+        # Released feats2depth.pth outputs 3 channels (a depth-encoding) —
+        # collapse to 1ch by mean before L1 against the 1ch cached GT.
+        if depth_pred.size(1) > 1:
+            depth_pred = depth_pred.mean(dim=1, keepdim=True)
         depth_pred = (depth_pred + 1.0) * 0.5               # rescale to [0, 1] to match cached GT
         depth_gt = self._gather_targets(slugs, pred_gray.device)  # [B, 1, H, W]
         if depth_pred.shape[-2:] != depth_gt.shape[-2:]:
