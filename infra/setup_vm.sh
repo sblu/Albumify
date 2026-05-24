@@ -9,10 +9,10 @@ cd "$(dirname "$0")/.."  # repo root assumed two levels up from infra/
 # The current pytorch-2-9-cu129-ubuntu-2204-nvidia-580 DLVM image is a 'stage'
 # variant: NVIDIA driver + CUDA, but no Python ML stack and no python3-venv.
 # Refresh apt and install just enough to create a venv. Idempotent.
-echo ">>> Refreshing apt + installing python3-venv + pip"
+echo ">>> Refreshing apt + installing python3-venv + pip + unzip"
 sudo apt-get update -qq
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq \
-  python3-venv python3-pip
+  python3-venv python3-pip unzip
 
 # Build the venv from scratch if it doesn't already have an activate script
 # (a half-built .venv from a failed prior run will trip up `source` otherwise).
