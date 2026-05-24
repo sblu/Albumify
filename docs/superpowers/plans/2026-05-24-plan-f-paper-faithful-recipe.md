@@ -164,21 +164,159 @@ Estimated effort: ~2 hours implementation, ~25 min run, ~$0.40.
 
 ---
 
-## Stage F3 — Add depth/geometry loss (NOT YET PLANNED)
+## Stage F3 — Add depth/geometry loss (CODE READY, RUN PENDING)
 
-Triggers after F2 review.
+**Status: code prepared 2026-05-24. Branch `feat/plan-f-paper-faithful`
+has every F3 change committed and pushed; just spin up a VM and run.**
 
-Sketch:
-- New file `albumify/geom_loss.py` (G_Geom + InceptionV3 + cached MiDaS).
-- New file `albumify/precompute_depth.py` (one-time DPT-Large pass over
-  `data/covers/` → `data/depth/`).
-- New CLI flags `--geom-weight`, `--depth-cache-dir`.
-- Download `feats2Geom` ckpt in `infra/setup_vm.sh`.
-- Tests per spec.
-- Run: F2 command + depth precompute + `--geom-weight 10`.
+### What's already done
 
-Estimated effort: ~3 hours implementation, ~35 min run, ~$0.65 (incl.
-~$0.10 one-time depth precompute on 424 covers).
+- `albumify/feats2depth.py` — vendored `GlobalGenerator2` (G_Geom from
+  upstream model.py, matches released ckpt shape) + frozen
+  `InceptionMixed6bExtractor` (torchvision Inception_V3 IMAGENET1K_V1).
+- `albumify/precompute_depth.py` — CLI that runs MiDaS DPT-Large over
+  `data/covers/` and caches `data/depth/{slug}.npy` (float16, min-max
+  normalized per image, default 256×256).
+- `albumify/geom_loss.py` — `GeomDepthLoss(pred_gray, slugs)` pre-loads
+  the depth cache eagerly at construction, fails fast on empty/missing
+  cache, raises informative `KeyError` on missing slugs.
+- `albumify/train.py` — `--geom-weight`, `--depth-cache-dir`,
+  `--feats2depth-ckpt` flags; slug propagation through train + eval
+  loops; tensorboard logs `train_step_geom` and `val_geom`.
+- `tests/test_geom_loss.py` — 7 stub-injected tests (run locally) + 1
+  real-ckpt smoke (skips without `artifacts/feats2Geom/feats2depth.pth`).
+- `pyproject.toml` — adds `timm` (MiDaS dep) and `gdown` (Google Drive).
+- `infra/setup_vm.sh` — pulls `feats2depth.zip` from upstream Google
+  Drive (Drive ID `1Ov1BNue74Yu-57X2rpdjqZy0o-fnFoly`) and unzips it
+  to `artifacts/feats2Geom/`. Idempotent.
+
+### Pickup procedure (the "tomorrow" GCP run)
+
+1. **Spin up VM** (per [[reference-gcp-vm-quirks]]):
+   ```bash
+   PROJECT=albumartifier SPOT=0 MACHINE_TYPE=g2-standard-4 \
+     GPU_TYPE=nvidia-l4 ZONE=us-east1-d ./infra/create_vm.sh
+   ```
+
+2. **Bootstrap** (the new setup_vm.sh handles feats2depth download):
+   ```bash
+   gcloud compute ssh albumify-train --zone us-east1-d \
+     --project albumartifier --tunnel-through-iap
+   git clone https://github.com/sblu/Albumify.git && cd Albumify
+   git switch feat/plan-f-paper-faithful
+   ./infra/setup_vm.sh   # installs timm/gdown, downloads feats2depth.zip
+   ```
+
+   **Verify after setup:** `ls artifacts/feats2Geom/` should show at
+   least one `.pth` file. If gdown failed (rate-limited), the script
+   prints fallback instructions; download manually from
+   <https://drive.google.com/file/d/1Ov1BNue74Yu-57X2rpdjqZy0o-fnFoly/view>
+   and unzip to `artifacts/feats2Geom/`.
+
+3. **Upload data + base ckpt** (use the tarball trick from F2's lessons
+   to avoid the sftp file-by-file IAP slowness):
+   ```bash
+   # On local machine
+   tar czf /tmp/albumify-data.tar.gz data/covers data/labels data/splits
+   gcloud compute scp --tunnel-through-iap /tmp/albumify-data.tar.gz \
+     albumify-train:~/Albumify/ --zone us-east1-d --project albumartifier
+   gcloud compute scp --tunnel-through-iap artifacts/informative_drawings.pth \
+     albumify-train:~/Albumify/artifacts/ --zone us-east1-d --project albumartifier
+   # On VM
+   cd ~/Albumify && tar xzf albumify-data.tar.gz && rm albumify-data.tar.gz
+   ```
+
+4. **Precompute depth** (one-time, ~3 min on L4):
+   ```bash
+   .venv/bin/python -m albumify.precompute_depth \
+     --covers-dir data/covers --out-dir data/depth --resize 256
+   # Expect: "[depth] done: wrote=424 skipped=0 failed=0 total=424"
+   ```
+
+   The cache is ~55 MB; subsequent runs reuse it.
+
+5. **Auto-detect the feats2depth ckpt filename:** the zip's contents
+   aren't documented. After step 2 finishes, identify the .pth file:
+   ```bash
+   ls artifacts/feats2Geom/
+   F2D_CKPT=$(ls artifacts/feats2Geom/*.pth | head -1)
+   echo "Will use: $F2D_CKPT"
+   ```
+
+6. **Run F3 training** in tmux:
+   ```bash
+   tmux new -s train
+   mkdir -p runs/plan-f3-arch-fix-plus-clip-plus-geom
+   nohup .venv/bin/python -m albumify.train \
+     --splits-dir data/splits --covers-dir data/covers --labels-dir data/labels \
+     --pretrained-ckpt artifacts/informative_drawings.pth \
+     --out-dir runs/plan-f3-arch-fix-plus-clip-plus-geom \
+     --no-lora --n-residual-blocks 3 --ngf 64 \
+     --optimizer adam --lr 2e-4 --weight-decay 0 \
+     --loss l1 --perceptual-weight 0 \
+     --clip-weight 10 \
+     --geom-weight 10 \
+     --depth-cache-dir data/depth \
+     --feats2depth-ckpt "$F2D_CKPT" \
+     --epochs 30 --batch-size 8 \
+     > runs/plan-f3-arch-fix-plus-clip-plus-geom/train.log 2>&1 &
+   ```
+
+7. **First-30-seconds check** — head of `train.log` must show:
+   ```
+   [pretrained] missing=0 unexpected=0
+   [clip] enabled weight=10.0 model=ViT-B/32 ...
+   [feats2depth] missing=0 unexpected=0   <-- if non-zero, abort and inspect ckpt layout
+   [geom] enabled weight=10.0 cache=data/depth ...
+   ```
+
+8. **Eval, holdouts, download** (same flags as F2, just point at the
+   new run dir):
+   ```bash
+   .venv/bin/python -m albumify.eval \
+     --ckpt-path runs/plan-f3-arch-fix-plus-clip-plus-geom/best.pt \
+     --splits-dir data/splits --covers-dir data/covers --labels-dir data/labels \
+     --ngf 64 --n-residual-blocks 3 --no-lora \
+     --out-dir runs/plan-f3-arch-fix-plus-clip-plus-geom/eval
+   tar czf /tmp/plan-f3-results.tar.gz runs/plan-f3-arch-fix-plus-clip-plus-geom/
+   # download via scp + delete VM
+   ```
+
+9. **Render holdouts locally** with the same one-liner used for F1/F2
+   (saved in conversation history; basically a snippet that loads
+   best.pt and runs each `data/holdout/*.png` through with thr=0.5,
+   0.7, 0.85, 0.95).
+
+### Expected per-step compute
+
+Per F2's actual numbers (~10.7 sec/epoch with CLIP added), F3 adds:
+- InceptionV3 + G_Geom forward per step: ~50 ms (much smaller models
+  than CLIP's ViT)
+- Depth cache GPU upload per batch: negligible (pre-loaded into RAM)
+
+Estimated F3 epoch: ~12-13 sec → ~7 min total training time. Plus
+~3 min depth precompute + ~3 min VM setup. **Total expected cost
+~$1.10-1.30 for the F3 run.**
+
+### Decision tree after F3
+
+| F3 outcome | next step |
+|---|---|
+| Clean line drawings on occluding contours (paper-like) | tag v0.3.0-paper-faithful, ship |
+| Less "halftone fill" than F2 but still too dense | proceed to F4 (PatchGAN on labels) for style pressure |
+| Same density as F2 with structure shifted | depth loss did its job; F4 needed for stylization |
+| Worse than F2 | something off in feats2depth load; inspect missing keys, may need to re-derive ckpt arch |
+
+### Open risks for tomorrow
+
+- **feats2depth.zip filename inside the archive is unknown.** Step 5
+  handles this with auto-detection but if the zip contains nested
+  directories the path may differ. Adjust if needed.
+- **gdown rate limits** sometimes refuse anonymous Google Drive
+  downloads. Manual fallback documented in setup_vm.sh + step 2.
+- **DPT-Large hub download is ~340 MB.** First run of
+  `precompute_depth.py` waits on this; subsequent runs use the
+  torch.hub cache.
 
 ---
 
