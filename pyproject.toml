@@ -32,6 +32,8 @@ train = [
     "clip @ git+https://github.com/openai/CLIP.git",
     "ftfy",       # CLIP tokenizer dep
     "regex",      # CLIP tokenizer dep
+    "timm>=0.9",  # MiDaS DPT-Large dep (Plan F3 precompute_depth)
+    "gdown>=5",   # Google Drive download for upstream feats2depth ckpt
 ]
 dev = [
     "pytest>=8",
