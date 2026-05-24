@@ -68,6 +68,8 @@ class TrainConfig:
     geom_weight: float = 0.0               # Plan F3: depth/geom loss (paper default 10.0)
     depth_cache_dir: Optional[str] = None  # required when geom_weight > 0
     feats2depth_ckpt: Optional[str] = None # required when geom_weight > 0
+    gan_weight: float = 0.0                # Plan F4: PatchGAN adversarial (paper default 1.0)
+    d_lr: float = 2e-4                     # discriminator learning rate (paper default)
 
 
 def make_optimizer(cfg: TrainConfig, params) -> "torch.optim.Optimizer":
@@ -298,6 +300,17 @@ def train(cfg: TrainConfig) -> dict[str, float]:
         print(f"[geom] enabled weight={cfg.geom_weight} cache={cfg.depth_cache_dir} "
               f"params={n_geom_params:,} trainable={n_geom_trainable:,}")
 
+    # ---- Plan F4: optional PatchGAN adversarial loss ----
+    discriminator: Optional[torch.nn.Module] = None
+    opt_d: Optional["torch.optim.Optimizer"] = None
+    if cfg.gan_weight > 0:
+        from albumify.discriminator import PatchGAN70
+        discriminator = PatchGAN70(in_ch=1).to(device)
+        opt_d = torch.optim.Adam(discriminator.parameters(), lr=cfg.d_lr, betas=(0.5, 0.999))
+        n_d_params = sum(p.numel() for p in discriminator.parameters())
+        print(f"[gan] enabled weight={cfg.gan_weight} D=PatchGAN70 "
+              f"params={n_d_params:,} d_lr={cfg.d_lr}")
+
     # ---- Optimizer ----
     if cfg.use_lora:
         opt_params = list(lora_parameters(model))
@@ -318,17 +331,37 @@ def train(cfg: TrainConfig) -> dict[str, float]:
             cover = cover.to(device, non_blocking=True)
             label = label.to(device, non_blocking=True)
             pred = model(cover)
+            pred_prob = torch.sigmoid(pred) if cfg.loss_type == "bce" else pred
+
+            # ---- D step (Plan F4) — must happen on detached pred ----
+            if discriminator is not None and opt_d is not None:
+                from albumify.discriminator import lsgan_d_loss
+                d_real = discriminator(label)
+                d_fake = discriminator(pred_prob.detach())
+                loss_d = lsgan_d_loss(d_real, d_fake)
+                opt_d.zero_grad(set_to_none=True)
+                loss_d.backward()
+                opt_d.step()
+            else:
+                loss_d = None
+
+            # ---- G step: paired + CLIP + geom + adversarial ----
             res = loss_fn(pred, label)
             if clip_loss_fn is not None:
-                pred_prob = torch.sigmoid(pred) if cfg.loss_type == "bce" else pred
                 clip_term = clip_loss_fn(pred_prob, cover)
                 res["clip"] = clip_term.detach()
                 res["total"] = res["total"] + cfg.clip_weight * clip_term
             if geom_loss_fn is not None:
-                pred_prob = torch.sigmoid(pred) if cfg.loss_type == "bce" else pred
                 geom_term = geom_loss_fn(pred_prob, list(slugs))
                 res["geom"] = geom_term.detach()
                 res["total"] = res["total"] + cfg.geom_weight * geom_term
+            if discriminator is not None:
+                from albumify.discriminator import lsgan_g_loss
+                d_fake_for_g = discriminator(pred_prob)
+                g_gan_term = lsgan_g_loss(d_fake_for_g)
+                res["g_gan"] = g_gan_term.detach()
+                res["d"] = loss_d.detach() if loss_d is not None else torch.tensor(0.0)
+                res["total"] = res["total"] + cfg.gan_weight * g_gan_term
             opt.zero_grad(set_to_none=True)
             res["total"].backward()
             opt.step()
@@ -345,6 +378,10 @@ def train(cfg: TrainConfig) -> dict[str, float]:
                     tb.add_scalar("loss/train_step_clip", float(res["clip"]), global_step)
                 if "geom" in res:
                     tb.add_scalar("loss/train_step_geom", float(res["geom"]), global_step)
+                if "g_gan" in res:
+                    tb.add_scalar("loss/train_step_g_gan", float(res["g_gan"]), global_step)
+                if "d" in res:
+                    tb.add_scalar("loss/train_step_d", float(res["d"]), global_step)
             if global_step % cfg.log_every == 0:
                 avg = running_total / max(1, n_batches)
                 print(f"epoch={epoch} step={global_step} loss={avg:.4f}")
@@ -456,6 +493,10 @@ def main() -> None:
     p.add_argument("--feats2depth-ckpt",  default=None,
                    help="Path to upstream feats2depth.pth checkpoint. "
                         "Required when --geom-weight > 0.")
+    p.add_argument("--gan-weight",        type=float, default=0.0,
+                   help="Plan F4: PatchGAN adversarial weight. 0 = disabled. Paper default 1.")
+    p.add_argument("--d-lr",              type=float, default=2e-4,
+                   help="Discriminator learning rate (only used when --gan-weight > 0).")
     p.add_argument("--seed",              type=int, default=0)
     args = p.parse_args()
     # When --loss bce and user did not explicitly pass --edge-weight, default to 19
@@ -481,6 +522,8 @@ def main() -> None:
         geom_weight=args.geom_weight,
         depth_cache_dir=args.depth_cache_dir,
         feats2depth_ckpt=args.feats2depth_ckpt,
+        gan_weight=args.gan_weight,
+        d_lr=args.d_lr,
     )
     train(cfg)
 
